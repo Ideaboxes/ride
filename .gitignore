@@ -1,0 +1,6 @@
+.DS_Store
+.sass-cache
+node_modules
+
+public/css/bundle.*
+public/js/bundle.js
