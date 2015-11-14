@@ -89,13 +89,18 @@ class Map extends React.Component {
             return true
           })
           .map(point => {
-            console.log (blockSize * Math.sin(radians) + (point.longitude - left), blockSize * Math.sin(radians) + (point.longitude - left) * canvasSize)
-            let x = Math.round(((blockSize * Math.sin(radians) + (point.longitude - left)) / blockSize * canvasSize))
-              , y = canvasSize - Math.round(((Math.cos(radians) * (point.latitude - bottom)) / blockSize * canvasSize))
+            let origin = turf.point([point.longitude, point.latitude])
+              , originLeft = turf.point([left, point.latitude])
+              , originBottom = turf.point([point.longitude, bottom])
+              , q1 = turf.distance(originLeft, origin)
+              , q3 = turf.distance(origin, originBottom)
+              , q2 = q3 * Math.sin(radians)
+              , q4 = q3 * Math.cos(radians)
+              , x = Math.round(((q1 + q2) / km3) * canvasSize)
+              , y = canvasSize - Math.round(q4 / km3 * canvasSize)
+
             return [x, y, 0.01]
           })
-
-        console.log (data)
 
         heat.data(data)
         heat.draw()
