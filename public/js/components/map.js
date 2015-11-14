@@ -7,7 +7,7 @@ class Map extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { size: 640 }
+    this.state = { size: 1000 }
   }
 
   componentDidMount() {
@@ -81,24 +81,29 @@ class Map extends React.Component {
 
         let data = json
           .filter(point => {
+            if (point.last) return
+
             // Don't process in this sqaure box, make it more simple first
-            if (json.longitude < left || json.longitude > right ||
-              json.latitude > top || json.latitude < bottom) return false
+            if (point.longitude < left || point.longitude > right ||
+              point.latitude > top || point.latitude < bottom) return false
             return true
           })
           .map(point => {
-            let x = Math.round((0.2 * Math.sin(radians) + (point.longitude - left)) * canvasSize)
-              , y = canvasSize - Math.round((Math.cos(radians) * (point.latitude - bottom)) * canvasSize)
+            console.log (blockSize * Math.sin(radians) + (point.longitude - left), blockSize * Math.sin(radians) + (point.longitude - left) * canvasSize)
+            let x = Math.round(((blockSize * Math.sin(radians) + (point.longitude - left)) / blockSize * canvasSize))
+              , y = canvasSize - Math.round(((Math.cos(radians) * (point.latitude - bottom)) / blockSize * canvasSize))
             return [x, y, 0.01]
           })
+
+        console.log (data)
+
         heat.data(data)
-        heat.draw(0.05)
+        heat.draw()
 
         let sw = L.latLng(bottom, left)
           , ne = L.latLng(top, right)
         L.imageOverlay(canvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
 
-        console.log (canvas.toDataURL())
       })
   }
 
