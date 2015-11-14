@@ -18,7 +18,7 @@
   },
   "scripts": {
     "build:css": "sass public/css/app.scss public/css/bundle.css",
-    "build:js": "browserify public/js/main.js -o public/js/bundle.js",
+    "build:js": "browserify --fast public/js/main.js -o public/js/bundle.js",
     "build": "time (npm run build:js && npm run build:css) && echo \"bundle.js\" $(stat -f \"%z\" public/js/bundle.js) \"bytes\"",
     "watch": "fswatch -0 -xnr -Ie \"bundle\\..*$\" public/js public/css | xargs -0 -n 1 -I {} npm run build",
     "start": "node server.js"
@@ -31,6 +31,7 @@
     "react": "^0.14.2",
     "react-dom": "^0.14.2",
     "react-router": "^1.0.0-rc4",
+    "simpleheat": "^0.3.0",
     "sqlite3": "^3.1.1",
     "turf": "^2.0.2",
     "whatwg-fetch": "^0.10.1"
