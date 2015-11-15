@@ -7,7 +7,7 @@ class Map extends React.Component {
   constructor(props) {
     super(props)
 
-    this.state = { size: 1000 }
+    this.state = { size: 3000 }
   }
 
   componentDidMount() {
@@ -76,9 +76,34 @@ class Map extends React.Component {
     console.log (`z = ${km2}`, `x = ${(km3 - km) / 2}`, `radians = ${radians}`)
 
 
-    let getKey = point => {
-      let longitude = point.longitude.toString() //x
-        , latitude = point.latitude.toString() //y
+    const CENTER_BOX = 0
+      , TOP_BOX = 1
+      , RIGHT_BOX = 2
+      , BOTTOM_BOX = 3
+      , LEFT_BOX = 4
+
+    let getKey = (point, box = CENTER_BOX) => {
+      // Alter the key base on the box
+      let pLongitude = point.longitude
+        , pLatitude = point.latitude
+
+      switch (box) {
+        case TOP_BOX:
+          pLatitude += 0.1
+          break
+        case RIGHT_BOX:
+          pLongitude += 0.1
+          break
+        case BOTTOM_BOX:
+          pLatitude += 0.1
+          break
+        case LEFT_BOX:
+          pLatitude += 0.1
+          break
+      }
+
+      let longitude = pLongitude.toString() //x
+        , latitude = pLatitude.toString() //y
         , longitudeTrimPoint = longitude.indexOf('.') + 2
         , latitudeTrimPoint = latitude.indexOf('.') + 2
 
@@ -87,17 +112,16 @@ class Map extends React.Component {
       // x = 103.24153, min x = 103.2, max x = 103.3
       // y = 1.2314434, min y =1.2, max y = 1.3
       let minX = longitude.substring(0, longitudeTrimPoint)
-        , maxX = (point.longitude + 0.1).toString().substring(0, longitudeTrimPoint)
+        , maxX = (pLongitude + 0.1).toString().substring(0, longitudeTrimPoint)
         , minY = latitude.substring(0, latitudeTrimPoint)
-        , maxY = (point.latitude + 0.1).toString().substring(0, latitudeTrimPoint)
+        , maxY = (pLatitude + 0.1).toString().substring(0, latitudeTrimPoint)
 
       let key = `${minX},${minY},${maxX},${maxY}`
       return key
     }
 
     let getBound = key => {
-      let [ minX, minY, maxX, maxY ] = key.split(',')
-      console.log (key.split(','))
+      let [ minX, minY, maxX, maxY ] = key.split(',').map(item => { return parseFloat(item) })
 
       // Create all bounds points
       let nw = turf.point([minX, maxY])
@@ -113,13 +137,41 @@ class Map extends React.Component {
 
       // Calculate radians
       let radians = Math.asin((km3 - km1)/km2)
+
+      // Recalculate for bigger canvas
+      let canvasMinX = minX - 0.1
+        , canvasMaxX = maxX + 0.1
+        , canvasMinY = minY - 0.1
+        , canvasMaxY = maxY + 0.1
+
+      let cnw = turf.point([canvasMinX, canvasMaxY])
+        , cne = turf.point([canvasMaxX, canvasMaxY])
+        , csw = turf.point([canvasMinX, canvasMinY])
+        , cse = turf.point([canvasMaxX, canvasMinY])
+
+      let ckm1 = turf.distance(cnw, cne)
+        , ckm2 = turf.distance(cnw, csw)
+        , ckm3 = turf.distance(csw, cse)
+        , ckm4 = turf.distance(cne, cse)
+
+      let cradians = Math.asin((ckm3 - ckm1)/ckm2)
+
       return {
         radians: radians,
-        minX: parseFloat(minX),
-        minY: parseFloat(minY),
-        maxX: parseFloat(maxX),
-        maxY: parseFloat(maxY),
-        size: km3
+        minX: minX,
+        minY: minY,
+        maxX: maxX,
+        maxY: maxY,
+        size: km3,
+
+        canvas: {
+          radians: cradians,
+          minX: canvasMinX,
+          minY: canvasMinY,
+          maxX: canvasMaxX,
+          maxY: canvasMaxY,
+          size: ckm3
+        }
       }
     }
 
@@ -130,25 +182,44 @@ class Map extends React.Component {
           return !points.last
         })
 
+        let begin = +new Date()
         let blocks = points.reduce((result, point) => {
           let key = getKey(point)
+            , topKey = getKey(point, TOP_BOX)
+            , leftKey = getKey(point, LEFT_BOX)
+            , bottomKey = getKey(point, BOTTOM_BOX)
+            , rightKey = getKey(point, RIGHT_BOX)
+            , keys = [key, topKey, leftKey, bottomKey, rightKey]
 
-          if (!result[key]) {
-            result[key] = {
-              points: [],
-              bounds: getBound(key)
+          keys.forEach(item => {
+            if (!result[item]) {
+              result[item] = {
+                points: [],
+                all: [],
+                allKeys: {},
+                bounds: getBound(item)
+              }
             }
-          }
+
+            // Try to avoid adding duplicate point
+            if (!result[item].allKeys[point.id]) {
+              result[item].all.push(point)
+              result[item].allKeys[point.id] = true
+            }
+
+          })
 
           result[key].points.push(point)
-
           return result
         }, {})
 
         Object.keys(blocks).forEach(key => {
           let block = blocks[key]
-            , points = block.points
+            , points = block.all
             , bounds = block.bounds
+
+          // Don't draw the box that doesn't have it own points
+          if (block.points.length == 0) return
 
           // Clean the canvas before redraw heatmap
           let context = canvas.getContext('2d')
@@ -156,25 +227,29 @@ class Map extends React.Component {
 
           let data = points.map(point => {
             let origin = turf.point([point.longitude, point.latitude])
-              , originLeft = turf.point([bounds.minX, point.latitude])
-              , originBottom = turf.point([point.longitude, bounds.minY])
+              , originLeft = turf.point([bounds.canvas.minX, point.latitude])
+              , originBottom = turf.point([point.longitude, bounds.canvas.minY])
               , q1 = turf.distance(originLeft, origin)
               , q3 = turf.distance(origin, originBottom)
-              , q2 = q3 * Math.sin(radians)
-              , q4 = q3 * Math.cos(radians)
-              , x = Math.round(((q1 + q2) / bounds.size) * canvasSize)
-              , y = canvasSize - Math.round(q4 / bounds.size * canvasSize)
+              , q2 = q3 * Math.sin(bounds.canvas.radians)
+              , q4 = q3 * Math.cos(bounds.canvas.radians)
+              , x = Math.round(((q1 + q2) / bounds.canvas.size) * canvasSize)
+              , y = canvasSize - Math.round(q4 / bounds.canvas.size * canvasSize)
             return [x, y, 0.01]
           })
           heat.data(data)
           heat.draw()
 
+          console.log (canvas.toDataURL())
+
           // TODO: This have to adjust to the degree add on the top
-          let sw = L.latLng(bounds.minY, bounds.minX)
-            , ne = L.latLng(bounds.maxY, bounds.maxX)
-          L.imageOverlay(canvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
+          // let sw = L.latLng(bounds.minY, bounds.minX)
+          //   , ne = L.latLng(bounds.maxY, bounds.maxX)
+          // L.imageOverlay(canvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
         })
         // End renders all blocks
+        let end = +new Date()
+        console.log(end-begin)
 
       })
   }
