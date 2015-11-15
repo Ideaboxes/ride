@@ -75,39 +75,106 @@ class Map extends React.Component {
     let radians = Math.asin((km3 - km)/km2)
     console.log (`z = ${km2}`, `x = ${(km3 - km) / 2}`, `radians = ${radians}`)
 
+
+    let getKey = point => {
+      let longitude = point.longitude.toString() //x
+        , latitude = point.latitude.toString() //y
+        , longitudeTrimPoint = longitude.indexOf('.') + 2
+        , latitudeTrimPoint = latitude.indexOf('.') + 2
+
+      // min x, max x
+      // min y, max y
+      // x = 103.24153, min x = 103.2, max x = 103.3
+      // y = 1.2314434, min y =1.2, max y = 1.3
+      let minX = longitude.substring(0, longitudeTrimPoint)
+        , maxX = (point.longitude + 0.1).toString().substring(0, longitudeTrimPoint)
+        , minY = latitude.substring(0, latitudeTrimPoint)
+        , maxY = (point.latitude + 0.1).toString().substring(0, latitudeTrimPoint)
+
+      let key = `${minX},${minY},${maxX},${maxY}`
+      return key
+    }
+
+    let getBound = key => {
+      let [ minX, minY, maxX, maxY ] = key.split(',')
+      console.log (key.split(','))
+
+      // Create all bounds points
+      let nw = turf.point([minX, maxY])
+        , ne = turf.point([maxX, maxY])
+        , sw = turf.point([minX, minY])
+        , se = turf.point([maxX, minY])
+
+      // Calculate all distance for bound
+      let km1 = turf.distance(nw, ne)
+        , km2 = turf.distance(nw, sw)
+        , km3 = turf.distance(sw, se)
+        , km4 = turf.distance(ne, se)
+
+      // Calculate radians
+      let radians = Math.asin((km3 - km1)/km2)
+      return {
+        radians: radians,
+        minX: parseFloat(minX),
+        minY: parseFloat(minY),
+        maxX: parseFloat(maxX),
+        maxY: parseFloat(maxY),
+        size: km3
+      }
+    }
+
     fetch('/data')
       .then(response => response.json())
       .then(json => {
+        let points = json.filter(points => {
+          return !points.last
+        })
 
-        let data = json
-          .filter(point => {
-            if (point.last) return
+        let blocks = points.reduce((result, point) => {
+          let key = getKey(point)
 
-            // Don't process in this sqaure box, make it more simple first
-            if (point.longitude < left || point.longitude > right ||
-              point.latitude > top || point.latitude < bottom) return false
-            return true
-          })
-          .map(point => {
+          if (!result[key]) {
+            result[key] = {
+              points: [],
+              bounds: getBound(key)
+            }
+          }
+
+          result[key].points.push(point)
+
+          return result
+        }, {})
+
+        Object.keys(blocks).forEach(key => {
+          let block = blocks[key]
+            , points = block.points
+            , bounds = block.bounds
+
+          // Clean the canvas before redraw heatmap
+          let context = canvas.getContext('2d')
+          context.clearRect(0, 0, canvas.width, canvas.height)
+
+          let data = points.map(point => {
             let origin = turf.point([point.longitude, point.latitude])
-              , originLeft = turf.point([left, point.latitude])
-              , originBottom = turf.point([point.longitude, bottom])
+              , originLeft = turf.point([bounds.minX, point.latitude])
+              , originBottom = turf.point([point.longitude, bounds.minY])
               , q1 = turf.distance(originLeft, origin)
               , q3 = turf.distance(origin, originBottom)
               , q2 = q3 * Math.sin(radians)
               , q4 = q3 * Math.cos(radians)
-              , x = Math.round(((q1 + q2) / km3) * canvasSize)
-              , y = canvasSize - Math.round(q4 / km3 * canvasSize)
-
+              , x = Math.round(((q1 + q2) / bounds.size) * canvasSize)
+              , y = canvasSize - Math.round(q4 / bounds.size * canvasSize)
             return [x, y, 0.01]
           })
+          heat.data(data)
+          heat.draw()
 
-        heat.data(data)
-        heat.draw()
-
-        let sw = L.latLng(bottom, left)
-          , ne = L.latLng(top, right)
-        L.imageOverlay(canvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
+          // TODO: This have to adjust to the degree add on the top
+          let sw = L.latLng(bounds.minY, bounds.minX)
+            , ne = L.latLng(bounds.maxY, bounds.maxX)
+          L.imageOverlay(canvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
+        })
+        // End renders all blocks
 
       })
   }
