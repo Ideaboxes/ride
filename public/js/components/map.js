@@ -22,6 +22,11 @@ class Map extends React.Component {
       , squareGrid = turf.squareGrid(extent, cellWidth, units)
       , features = squareGrid.features
 
+    map.on('zoomlevelschange', e => {
+      console.log (map.getZoom())
+      console.log (map.getBounds())
+    })
+
     let polygons = features
       .map(feature => {
         let coordinates = feature.geometry.coordinates[0]
@@ -31,9 +36,9 @@ class Map extends React.Component {
         return coordinates
       })
 
-    // polygons.forEach(polygon => {
-    //   L.polygon(polygon, { weight: 1 }).addTo(map)
-    // })
+    polygons.forEach(polygon => {
+      L.polygon(polygon, { weight: 1 }).addTo(map)
+    })
     map.fitBounds(bounds)
 
     this.draw(map)
@@ -42,40 +47,15 @@ class Map extends React.Component {
   // Draw an overlay
   draw(map) {
 
-    let left = 103.8
-      , right = 103.9
-      , bottom = 1.3
-      , top = 1.4
-      , blockSize = 0.1
+    let blockSize = 0.1
       , canvasSize = this.state.size
-
-    let point1 = turf.point([left, top])
-      , point2 = turf.point([right, top])
-      , point3 = turf.point([left, bottom])
-      , point4 = turf.point([right, bottom])
-
-    // Draw all points in grid [1.3, 103.8], [1.4, 103.9]
-    let km = turf.distance(point1, point2)
-      , km2 = turf.distance(point1, point3)
-      , km3 = turf.distance(point3, point4)
-      , km4 = turf.distance(point2, point4)
-    console.log (km, km2, km3, km4)
-
-    ///   1 - 2
-    ///  /     \
-    /// 3 - - - 4
-
-    console.log (`Width ${km3} km`, `${km3 * 1000} m`)
+      , trimLength = blockSize.toString().length - 1
 
     let canvas = this.refs.canvas
       , cropCanvas = this.refs.cropCanvas
       , heat = simpleheat(canvas)
 
     heat.radius(2, 3)
-
-    let radians = Math.asin((km3 - km)/km2)
-    console.log (`z = ${km2}`, `x = ${(km3 - km) / 2}`, `radians = ${radians}`)
-
 
     const CENTER_BOX = 0
       , TOP_BOX = 1
@@ -105,8 +85,8 @@ class Map extends React.Component {
 
       let longitude = pLongitude.toString() //x
         , latitude = pLatitude.toString() //y
-        , longitudeTrimPoint = longitude.indexOf('.') + 2
-        , latitudeTrimPoint = latitude.indexOf('.') + 2
+        , longitudeTrimPoint = longitude.indexOf('.') + trimLength
+        , latitudeTrimPoint = latitude.indexOf('.') + trimLength
 
       // min x, max x
       // min y, max y
@@ -253,7 +233,7 @@ class Map extends React.Component {
             , sw = L.latLng(bounds.minY, bounds.minX)
             , ne = L.latLng(bounds.maxY, bounds.maxX)
             , nw = L.latLng(bounds.maxY, bounds.minX)
-          L.imageOverlay(cropCanvas.toDataURL(), L.latLngBounds([se, sw, ne, nw])).addTo(map);
+          L.imageOverlay(cropCanvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
 
         })
         // End renders all blocks
