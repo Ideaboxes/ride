@@ -90,16 +90,16 @@ class Map extends React.Component {
 
       switch (box) {
         case TOP_BOX:
-          pLatitude += 0.1
+          pLatitude += blockSize
           break
         case RIGHT_BOX:
-          pLongitude += 0.1
+          pLongitude += blockSize
           break
         case BOTTOM_BOX:
-          pLatitude -= 0.1
+          pLatitude -= blockSize
           break
         case LEFT_BOX:
-          pLatitude -= 0.1
+          pLatitude -= blockSize
           break
       }
 
@@ -113,9 +113,9 @@ class Map extends React.Component {
       // x = 103.24153, min x = 103.2, max x = 103.3
       // y = 1.2314434, min y =1.2, max y = 1.3
       let minX = longitude.substring(0, longitudeTrimPoint)
-        , maxX = (pLongitude + 0.1).toString().substring(0, longitudeTrimPoint)
+        , maxX = (pLongitude + blockSize).toString().substring(0, longitudeTrimPoint)
         , minY = latitude.substring(0, latitudeTrimPoint)
-        , maxY = (pLatitude + 0.1).toString().substring(0, latitudeTrimPoint)
+        , maxY = (pLatitude + blockSize).toString().substring(0, latitudeTrimPoint)
 
       let key = `${minX},${minY},${maxX},${maxY}`
       return key
@@ -140,10 +140,10 @@ class Map extends React.Component {
       let radians = Math.asin((km3 - km1)/km2)
 
       // Recalculate for bigger canvas
-      let canvasMinX = minX - 0.1
-        , canvasMaxX = maxX + 0.1
-        , canvasMinY = minY - 0.1
-        , canvasMaxY = maxY + 0.1
+      let canvasMinX = minX - blockSize
+        , canvasMaxX = maxX + blockSize
+        , canvasMinY = minY - blockSize
+        , canvasMaxY = maxY + blockSize
 
       let cnw = turf.point([canvasMinX, canvasMaxY])
         , cne = turf.point([canvasMaxX, canvasMaxY])
