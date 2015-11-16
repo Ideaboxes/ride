@@ -96,10 +96,10 @@ class Map extends React.Component {
           pLongitude += 0.1
           break
         case BOTTOM_BOX:
-          pLatitude += 0.1
+          pLatitude -= 0.1
           break
         case LEFT_BOX:
-          pLatitude += 0.1
+          pLatitude -= 0.1
           break
       }
 
@@ -240,18 +240,6 @@ class Map extends React.Component {
           })
           heat.data(data)
           heat.draw()
-
-          context.fillStyle = 'rgba(255, 0, 0, 0.8)'
-          context.fillRect(0, 0, 1000, 1000)
-          context.fillRect(2000, 0, 1000, 1000)
-          context.fillRect(0, 2000, 1000, 1000)
-          context.fillRect(2000, 2000, 1000, 1000)
-
-          context.fillStyle = 'rgba(0, 255, 0, 0.8)'
-          context.fillRect(1000, 0, 1000, 1000)
-          context.fillRect(0, 1000, 1000, 1000)
-          context.fillRect(2000, 1000, 1000, 1000)
-          context.fillRect(1000, 2000, 1000, 1000)
           console.log (canvas.toDataURL())
 
           // Crop the map for specific part
@@ -261,9 +249,11 @@ class Map extends React.Component {
           console.log (cropCanvas.toDataURL())
 
           // TODO: This have to adjust to the degree add on the top
-          let sw = L.latLng(bounds.minY, bounds.minX)
+          let se = L.latLng(bounds.minY, bounds.maxX)
+            , sw = L.latLng(bounds.minY, bounds.minX)
             , ne = L.latLng(bounds.maxY, bounds.maxX)
-          L.imageOverlay(cropCanvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
+            , nw = L.latLng(bounds.maxY, bounds.minX)
+          L.imageOverlay(cropCanvas.toDataURL(), L.latLngBounds([se, sw, ne, nw])).addTo(map);
 
         })
         // End renders all blocks
