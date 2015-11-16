@@ -12,7 +12,7 @@ class Map extends React.Component {
 
   componentDidMount() {
     L.mapbox.accessToken = "pk.eyJ1IjoibGx1biIsImEiOiI0NzZjNDE3N2I1YWEwNWVjOGZjZDUzY2IxZmY3Y2MzOCJ9.Sj_jgKyAatQFDirVDM8jZw"
-    let map = L.mapbox.map(this.refs.map, "llun.nhpgpcn0")
+    let map = L.mapbox.map(this.refs.map, "llun.nhpgpcn0", { maxZoom: 15 })
       , extent = [103.6, 1.2, 104.2, 1.6]
       , cellWidth = 0.1
       , units = 'degrees'
@@ -22,7 +22,7 @@ class Map extends React.Component {
       , squareGrid = turf.squareGrid(extent, cellWidth, units)
       , features = squareGrid.features
 
-    map.on('zoomlevelschange', e => {
+    map.on('zoomend', e => {
       console.log (map.getZoom())
       console.log (map.getBounds())
     })
@@ -36,9 +36,9 @@ class Map extends React.Component {
         return coordinates
       })
 
-    polygons.forEach(polygon => {
-      L.polygon(polygon, { weight: 1 }).addTo(map)
-    })
+    // polygons.forEach(polygon => {
+    //   L.polygon(polygon, { weight: 1 }).addTo(map)
+    // })
     map.fitBounds(bounds)
 
     this.draw(map)
