@@ -31,9 +31,9 @@ class Map extends React.Component {
         return coordinates
       })
 
-    polygons.forEach(polygon => {
-      L.polygon(polygon, { weight: 1 }).addTo(map)
-    })
+    // polygons.forEach(polygon => {
+    //   L.polygon(polygon, { weight: 1 }).addTo(map)
+    // })
     map.fitBounds(bounds)
 
     this.draw(map)
@@ -68,6 +68,7 @@ class Map extends React.Component {
     console.log (`Width ${km3} km`, `${km3 * 1000} m`)
 
     let canvas = this.refs.canvas
+      , cropCanvas = this.refs.cropCanvas
       , heat = simpleheat(canvas)
 
     heat.radius(2, 3)
@@ -240,12 +241,30 @@ class Map extends React.Component {
           heat.data(data)
           heat.draw()
 
+          context.fillStyle = 'rgba(255, 0, 0, 0.8)'
+          context.fillRect(0, 0, 1000, 1000)
+          context.fillRect(2000, 0, 1000, 1000)
+          context.fillRect(0, 2000, 1000, 1000)
+          context.fillRect(2000, 2000, 1000, 1000)
+
+          context.fillStyle = 'rgba(0, 255, 0, 0.8)'
+          context.fillRect(1000, 0, 1000, 1000)
+          context.fillRect(0, 1000, 1000, 1000)
+          context.fillRect(2000, 1000, 1000, 1000)
+          context.fillRect(1000, 2000, 1000, 1000)
           console.log (canvas.toDataURL())
 
+          // Crop the map for specific part
+          let cropContext = cropCanvas.getContext('2d')
+          cropContext.clearRect(0, 0, cropCanvas.width, cropCanvas.height)
+          cropContext.drawImage(canvas, 1000, 1000, 1000, 1000, 0, 0, 1000, 1000)
+          console.log (cropCanvas.toDataURL())
+
           // TODO: This have to adjust to the degree add on the top
-          // let sw = L.latLng(bounds.minY, bounds.minX)
-          //   , ne = L.latLng(bounds.maxY, bounds.maxX)
-          // L.imageOverlay(canvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
+          let sw = L.latLng(bounds.minY, bounds.minX)
+            , ne = L.latLng(bounds.maxY, bounds.maxX)
+          L.imageOverlay(cropCanvas.toDataURL(), L.latLngBounds(sw, ne)).addTo(map);
+
         })
         // End renders all blocks
         let end = +new Date()
@@ -255,10 +274,14 @@ class Map extends React.Component {
   }
 
   render() {
+    let cropCanvasSize = this.state.size / 3
+      , canvasStyle = { display: 'none' }
+
     return (
       <div className="map">
         <div ref="map" style={{ flex: 1 }}></div>
-        <canvas ref="canvas" width={this.state.size} height={this.state.size} style={{ display: "none" }}></canvas>
+        <canvas ref="canvas" width={this.state.size} height={this.state.size} style={canvasStyle}></canvas>
+        <canvas ref="cropCanvas" width={cropCanvasSize} height={cropCanvasSize} style={canvasStyle}></canvas>
       </div>
     )
   }
