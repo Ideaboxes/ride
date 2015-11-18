@@ -1,58 +1,54 @@
 'use strict'
 
+let util = require('./util')
+
 const CENTER = 0
   , TOP = 1
   , RIGHT = 2
   , BOTTOM = 3
   , LEFT = 4
 
+// Each pane is 0.1 degree square
+const degree = 0.1
+
 class Pane {
 
   constructor(options) {
     this.options = options || {
-      size: 3000,
-      degree: 0.1
+      size: 3000
     }
   }
 
   key(location, position) {
-    let degree = this.options.degree
-      , trimLength = degree.toString().length - 1
+    let length = degree.toString().length - 1
 
     // Alter the key base on the position
-    let pLongitude = location.longitude
-      , pLatitude = location.latitude
+    let longitude = location.longitude
+      , latitude = location.latitude
 
     switch (position) {
       case TOP:
-        pLatitude += degree
+        latitude += degree
         break
       case RIGHT:
-        pLongitude += degree
+        longitude += degree
         break
       case BOTTOM:
-        pLatitude -= degree
+        latitude -= degree
         break
       case LEFT:
-        pLongitude -= degree
+        longitude -= degree
         break
     }
 
-    let longitude = pLongitude.toString() //x
-      , latitude = pLatitude.toString() //y
-      , longitudeTrimPoint = longitude.indexOf('.') + trimLength
-      , latitudeTrimPoint = latitude.indexOf('.') + trimLength
+    // Floor down the locations
+    let degreeExp = Math.abs(+degree.toExponential().split('e')[1])
+      , minX = util.floor(longitude, degreeExp)
+      , minY = util.floor(latitude, degreeExp)
+      , maxX = minX + degree
+      , maxY = minY + degree
 
-    // min x, max x
-    // min y, max y
-    // x = 103.24153, min x = 103.2, max x = 103.3
-    // y = 1.2314434, min y =1.2, max y = 1.3
-    let minX = longitude.substring(0, longitudeTrimPoint)
-      , maxX = (pLongitude + degree).toString().substring(0, longitudeTrimPoint)
-      , minY = latitude.substring(0, latitudeTrimPoint)
-      , maxY = (pLatitude + degree).toString().substring(0, latitudeTrimPoint)
-
-    let key = `${minX},${minY},${maxX},${maxY}`
+    let key = `${minX},${minY},${maxX.toFixed(degreeExp)},${maxY.toFixed(degreeExp)}`
     return key
   }
 }
