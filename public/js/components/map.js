@@ -12,7 +12,7 @@ class Map extends React.Component {
 
   componentDidMount() {
     L.mapbox.accessToken = "pk.eyJ1IjoibGx1biIsImEiOiI0NzZjNDE3N2I1YWEwNWVjOGZjZDUzY2IxZmY3Y2MzOCJ9.Sj_jgKyAatQFDirVDM8jZw"
-    let map = L.mapbox.map(this.refs.map, "llun.nhpgpcn0", { maxZoom: 15 })
+    let map = L.mapbox.map(this.refs.map, "llun.nhpgpcn0")
       , extent = [103.6, 1.2, 104.2, 1.6]
       , cellWidth = 0.1
       , units = 'degrees'
@@ -206,6 +206,7 @@ class Map extends React.Component {
           let context = canvas.getContext('2d')
           context.clearRect(0, 0, canvas.width, canvas.height)
 
+          // Heatmap data
           let data = points.map(point => {
             let origin = turf.point([point.longitude, point.latitude])
               , originLeft = turf.point([bounds.canvas.minX, point.latitude])
@@ -214,12 +215,33 @@ class Map extends React.Component {
               , q3 = turf.distance(origin, originBottom)
               , q2 = q3 * Math.sin(bounds.canvas.radians)
               , q4 = q3 * Math.cos(bounds.canvas.radians)
+              // Adjust x coordinate error because of length between two point in northen(/southern) are shorter than in equator
               , x = Math.round(((q1 + q2) / bounds.canvas.size) * canvasSize)
+              // , x = Math.round(q1 / bounds.canvas.size * canvasSize)
               , y = canvasSize - Math.round(q4 / bounds.canvas.size * canvasSize)
             return [x, y, 0.01]
           })
           heat.data(data)
           heat.draw()
+
+          // Draw boundary to see what's happen why the box is not connected.
+          let boundTopLeft = [Math.tan(bounds.canvas.radians) * this.state.size, 0]
+            , boundTopRight = [this.state.size - (Math.tan(bounds.canvas.radians) * this.state.size), 0]
+            , boundBottomLeft = [0, this.state.size]
+            , boundBottomRight = [this.state.size, this.state.size]
+
+          console.log (boundTopLeft, boundTopRight, boundBottomLeft, boundBottomRight)
+
+          context.beginPath()
+          context.strokeStyle = 'red'
+          context.moveTo(boundTopLeft[0], boundTopLeft[1])
+          context.lineTo(boundTopRight[0], boundTopRight[1])
+          context.lineTo(boundBottomRight[0], boundBottomRight[1])
+          context.lineTo(boundBottomLeft[0], boundBottomLeft[1])
+          context.lineTo(boundTopLeft[0], boundTopLeft[1])
+          context.lineWidth = 10
+          context.stroke()
+
           console.log (canvas.toDataURL())
 
           // Crop the map for specific part
