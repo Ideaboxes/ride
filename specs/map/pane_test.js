@@ -53,4 +53,22 @@ describe('Pane', () => {
 
   })
 
+  describe('#bounds', () => {
+
+    let key = '103.4,12.5,103.5,12.6'
+      , pane = null
+    beforeEach(() => {
+      pane = new Pane
+    })
+
+    it ('returns all values in the key and radians', () => {
+      expect(pane.bounds(key)).to.deep.equal({
+        min: { x: 103.3, y: 12.4 },
+        max: { x: 103.6, y: 12.7 },
+        radians: 0.43552362366419334
+      })
+    })
+
+  })
+
 })

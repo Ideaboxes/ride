@@ -1,6 +1,7 @@
 'use strict'
 
-let util = require('./util')
+let turf = require('turf')
+  , util = require('./util')
 
 const CENTER = 0
   , TOP = 1
@@ -50,6 +51,33 @@ class Pane {
 
     let key = `${minX},${minY},${maxX.toFixed(degreeExp)},${maxY.toFixed(degreeExp)}`
     return key
+  }
+
+  bounds(key) {
+    let keys = key.split(',').map(item => { return parseFloat(item) })
+      , exp = Math.abs(+degree.toExponential().split('e')[1])
+
+    let minX = +(keys[0] - degree).toFixed(exp)
+      , maxX = +(keys[2] + degree).toFixed(exp)
+      , minY = +(keys[1] - degree).toFixed(exp)
+      , maxY = +(keys[3] + degree).toFixed(exp)
+
+    let nw = turf.point([minX, maxY])
+      , ne = turf.point([maxX, maxY])
+      , sw = turf.point([minX, minY])
+      , se = turf.point([maxX, maxY])
+
+    let km1 = turf.distance(nw, ne)
+      , km2 = turf.distance(nw, sw)
+      , km3 = turf.distance(sw, se)
+      , km4 = turf.distance(ne, se)
+
+    let radians = Math.asin((km3 - km1) / km2)
+    return {
+      min: { x: minX, y: minY },
+      max: { x: maxX, y: maxY },
+      radians: radians
+    }
   }
 }
 
