@@ -18,6 +18,7 @@ class Pane {
     this.options = options || {
       size: 3000
     }
+    this.blocks = {}
   }
 
   key(location, position) {
@@ -78,6 +79,28 @@ class Pane {
       max: { x: maxX, y: maxY },
       radians: radians
     }
+  }
+
+  addPoint(point, blocks) {
+    let centerKey = this.key(point)
+      , topKey = this.key(point, TOP)
+      , leftKey = this.key(point, LEFT)
+      , bottomKey = this.key(point, BOTTOM)
+      , rightKey = this.key(point, RIGHT)
+      , keys = [centerKey, topKey, leftKey, bottomKey, rightKey]
+
+    keys.forEach(key => {
+      if (!blocks[key]) {
+        blocks[key] = {
+          points: new Set(),
+          all: new Set(),
+          bounds: this.bounds(key)
+        }
+      }
+
+      blocks[key].all.add(point)
+      blocks[key].points.add(point)
+    })
   }
 }
 
