@@ -71,4 +71,33 @@ describe('Pane', () => {
 
   })
 
+  describe('#addPoint', () => {
+
+    let pane = null
+
+    beforeEach(() => {
+      pane = new Pane
+    })
+
+    it ('adds point to boxes', () => {
+      let point = { longitude: 103.412, latitude: 12.5231 }
+        , keys = ['103.4,12.5,103.5,12.6', '103.4,12.4,103.5,12.5',
+        '103.5,12.5,103.6,12.6', '103.4,12.6,103.5,12.7', '103.3,12.5,103.4,12.6']
+
+      pane.addPoint(point)
+
+      keys.forEach(key => {
+        expect(pane.blocks).to.include.keys(key)
+        expect(pane.blocks[key]).to.deep.equal({
+          all: new Set([point]),
+          points: new Set([point]),
+          bounds: pane.bounds(key)
+        })
+      })
+
+    })
+
+
+  })
+
 })
