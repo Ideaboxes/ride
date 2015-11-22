@@ -79,32 +79,32 @@ describe('Pane', () => {
   describe('#addPoint', () => {
 
     let pane = null
+      , point = { longitude: 103.412, latitude: 12.5231 }
 
     beforeEach(() => {
       pane = new Pane
+      pane.addPoint(point, pane.blocks)
     })
 
-    it ('adds point to boxes', () => {
-      let point = { longitude: 103.412, latitude: 12.5231 }
-        , keys = ['103.4,12.5,103.5,12.6', '103.4,12.4,103.5,12.5',
-        '103.5,12.5,103.6,12.6', '103.4,12.6,103.5,12.7', '103.3,12.5,103.4,12.6']
+    it ('adds point to all and points in center box', () => {
+      let key = '103.4,12.5,103.5,12.6'
+      expect(pane.blocks).to.include.keys(key)
+      expect(pane.blocks[key].all.size).to.equal(1)
+      expect(pane.blocks[key].points.size).to.equal(1)
+    })
 
-      pane.addPoint(point, pane.blocks)
-
+    it ('adds point to all in boxes around the center', () => {
+      let keys = ['103.4,12.4,103.5,12.5', '103.5,12.5,103.6,12.6',
+        '103.4,12.6,103.5,12.7', '103.3,12.5,103.4,12.6']
       keys.forEach(key => {
         expect(pane.blocks).to.include.keys(key)
-        expect(pane.blocks[key]).to.deep.equal({
-          all: new Set([point]),
-          points: new Set([point]),
-          bounds: pane.bounds(key)
-        })
+        expect(pane.blocks[key].all.size).to.equal(1)
+        expect(pane.blocks[key].points.size).to.equal(0)
       })
-
     })
 
     it ('adds only one point to the box for same coordinate', () => {
-      let point = { longitude: 103.412, latitude: 12.5231 }
-        , block = {}
+      let block = {}
 
       pane.addPoint(point, block)
       pane.addPoint(point, block)
@@ -150,7 +150,7 @@ describe('Pane', () => {
 
   describe('with data', function() {
 
-    this.timeout(5000)
+    this.timeout(10000)
     let pane = null
 
     before(() => {
