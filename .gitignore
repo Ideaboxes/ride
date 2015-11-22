@@ -5,3 +5,5 @@ node_modules
 public/css/bundle.*
 public/js/bundle.js
 data.db
+
+specs/map/blocks

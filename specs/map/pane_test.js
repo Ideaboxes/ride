@@ -148,21 +148,54 @@ describe('Pane', () => {
 
   })
 
-  describe('#import', function() {
+  describe('with data', function() {
 
-    this.timeout(10000)
-
+    this.timeout(5000)
     let pane = null
 
-    beforeEach(() => {
+    before(() => {
       pane = new Pane
+
+      let data = fs.readFileSync(__dirname + '/data.json', { encoding: 'utf-8' })
+      pane.import(JSON.parse(data))
     })
 
-    it ('adds all data points to the blocks', () => {
-      let data = fs.readFileSync(__dirname + '/data.json', { encoding: 'utf-8'})
-      pane.import(JSON.parse(data))
+    describe('#import', () => {
 
-      expect(Object.keys(pane.blocks).length).to.equal(8)
+      it ('adds all data points to blocks', () => {
+        expect(Object.keys(pane.blocks).length).to.equal(8)
+      })
+
+    })
+
+    describe('#write', () => {
+
+      it ('creates a directory and write all block images to that directory', (done) => {
+        let dir = `${__dirname}/blocks`
+        new Promise((resolve, reject) => {
+          pane.write(dir, (error, paths) => {
+            if (error) return reject(error)
+            resolve(paths)
+          })
+        })
+        .then(paths => {
+          return new Promise((resolve, reject) => {
+            fs.access(dir, error => {
+              if (error) return resolve(false)
+              resolve(true)
+            })
+          })
+        })
+        .then(access => {
+          expect(access).to.be.true
+          done()
+        })
+        .catch(done)
+      })
+
+      it ('writes only block that contain points to file', () => {
+      })
+
     })
 
   })
