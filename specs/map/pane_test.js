@@ -148,4 +148,23 @@ describe('Pane', () => {
 
   })
 
+  describe('#import', function() {
+
+    this.timeout(10000)
+
+    let pane = null
+
+    beforeEach(() => {
+      pane = new Pane
+    })
+
+    it ('adds all data points to the blocks', () => {
+      let data = fs.readFileSync(__dirname + '/data.json', { encoding: 'utf-8'})
+      pane.import(JSON.parse(data))
+
+      expect(Object.keys(pane.blocks).length).to.equal(8)
+    })
+
+  })
+
 })

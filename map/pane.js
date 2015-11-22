@@ -139,6 +139,12 @@ class Pane {
     cropContext.drawImage(pane, cropSize, cropSize, cropSize, cropSize, 0, 0, cropSize, cropSize)
     return crop
   }
+
+  import(data) {
+    data.forEach(point => {
+      this.addPoint(point, this.blocks)
+    })
+  }
 }
 
 Pane.CENTER = CENTER
