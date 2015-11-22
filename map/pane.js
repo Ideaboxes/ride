@@ -1,7 +1,10 @@
 'use strict'
 
 let turf = require('turf')
+  , canvas = require('canvas')
+  , simpleheat = require('simpleheat')
   , util = require('./util')
+  , Image = canvas.Image
 
 const CENTER = 0
   , TOP = 1
@@ -77,7 +80,8 @@ class Pane {
     return {
       min: { x: minX, y: minY },
       max: { x: maxX, y: maxY },
-      radians: radians
+      radians: radians,
+      size: km3
     }
   }
 
@@ -101,6 +105,39 @@ class Pane {
       blocks[key].all.add(point)
       blocks[key].points.add(point)
     })
+  }
+
+  draw(block) {
+    let size = this.options.size
+      , pane = new canvas(size, size)
+      , heat = simpleheat(pane)
+      , context = pane.getContext('2d')
+
+    heat.radius(2, 3)
+
+    let data = Array.from(block.all).map(point => {
+      let origin = turf.point([point.longitude, point.latitude])
+        , originLeft = turf.point([block.bounds.min.x, point.latitude])
+        , originBottom = turf.point([point.longitude, block.bounds.min.y])
+        , q1 = turf.distance(originLeft, origin)
+        , q3 = turf.distance(origin, originBottom)
+        , q2 = q3 * Math.sin(block.bounds.radians)
+        , q4 = q3 * Math.cos(block.bounds.radians)
+
+        // Adjust x coordinate error because of length between two point in northen(/southern) are shorter than in equator
+        , x = Math.round(((q1 + q2) / block.bounds.size) * size)
+        , y = size - Math.round(q4 / block.bounds.size * size)
+      return [x, y, 0.01]
+    })
+    heat.data(data)
+    heat.draw()
+
+    let cropSize = size / 3
+      , crop = new canvas(cropSize, cropSize)
+      , cropContext = crop.getContext('2d')
+
+    cropContext.drawImage(pane, cropSize, cropSize, cropSize, cropSize, 0, 0, cropSize, cropSize)
+    return crop
   }
 }
 

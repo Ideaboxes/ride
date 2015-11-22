@@ -1,7 +1,11 @@
 'use strict'
 
 let chai = require('chai')
+  , fs = require('fs')
+  , Canvas = require('canvas')
+
 let expect = chai.expect
+  , Image = Canvas.Image
 
 let Pane = require('../../map/pane')
 
@@ -65,7 +69,8 @@ describe('Pane', () => {
       expect(pane.bounds(key)).to.deep.equal({
         min: { x: 103.3, y: 12.4 },
         max: { x: 103.6, y: 12.7 },
-        radians: 0.43552362366419334
+        radians: 0.43552362366419334,
+        size: 46.630427797004934
       })
     })
 
@@ -84,7 +89,7 @@ describe('Pane', () => {
         , keys = ['103.4,12.5,103.5,12.6', '103.4,12.4,103.5,12.5',
         '103.5,12.5,103.6,12.6', '103.4,12.6,103.5,12.7', '103.3,12.5,103.4,12.6']
 
-      pane.addPoint(point)
+      pane.addPoint(point, pane.blocks)
 
       keys.forEach(key => {
         expect(pane.blocks).to.include.keys(key)
@@ -97,6 +102,49 @@ describe('Pane', () => {
 
     })
 
+    it ('adds only one point to the box for same coordinate', () => {
+      let point = { longitude: 103.412, latitude: 12.5231 }
+        , block = {}
+
+      pane.addPoint(point, block)
+      pane.addPoint(point, block)
+
+      expect(block['103.4,12.5,103.5,12.6'].points.size).to.equal(1)
+      expect(block['103.4,12.5,103.5,12.6'].all.size).to.equal(1)
+    })
+
+  })
+
+  describe('#draw', () => {
+
+    let pane = null
+
+    beforeEach(() => {
+      pane = new Pane
+    })
+
+    it ('draws the block and returns an image', (done) => {
+      let block = {
+        points: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
+        all: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
+        bounds: { min: { x: 103.3, y: 12.4 }, max: { x: 103.6, y: 12.7 }, radians: 0.43552362366419334 }
+      }
+
+      let canvas = pane.draw(block)
+      fs.readFile(__dirname + '/blank.png', function(err, blank){
+        if (err) throw err
+
+        let image = new Image
+        image.src = blank
+
+        let blankCanvas = new Canvas(image.width, image.height)
+          , blankContext = blankCanvas.getContext('2d')
+        blankContext.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height)
+        expect(canvas.toDataURL()).to.equal(blankCanvas.toDataURL())
+        done()
+      })
+
+    })
 
   })
 
