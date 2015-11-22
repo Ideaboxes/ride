@@ -3,6 +3,7 @@
 let turf = require('turf')
   , canvas = require('canvas')
   , simpleheat = require('simpleheat')
+  , fs = require('fs')
   , util = require('./util')
   , Image = canvas.Image
 
@@ -103,8 +104,8 @@ class Pane {
       }
 
       blocks[key].all.add(point)
-      blocks[key].points.add(point)
     })
+    blocks[centerKey].points.add(point)
   }
 
   draw(block) {
@@ -145,6 +146,22 @@ class Pane {
       this.addPoint(point, this.blocks)
     })
   }
+
+  write(directory, callback) {
+    return new Promise((resolve, reject) => {
+      fs.mkdir(directory, (error) => {
+        if (error) return reject(error)
+        resolve()
+      })
+    }).then(() => {
+      let blocks = Object.keys(this.blocks).filter(block => (this.blocks[block].points.size > 0))
+      callback()
+    }).catch(err => {
+      console.log (err)
+      callback(err)
+    })
+  }
+
 }
 
 Pane.CENTER = CENTER
