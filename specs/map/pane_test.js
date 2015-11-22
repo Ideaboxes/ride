@@ -1,7 +1,7 @@
 'use strict'
 
 let chai = require('chai')
-  , fs = require('fs')
+  , fs = require('fs-extra')
   , Canvas = require('canvas')
 
 let expect = chai.expect
@@ -169,31 +169,28 @@ describe('Pane', () => {
     })
 
     describe('#write', () => {
+      let dir = `${__dirname}/blocks`
 
-      it ('creates a directory and write all block images to that directory', (done) => {
-        let dir = `${__dirname}/blocks`
-        new Promise((resolve, reject) => {
-          pane.write(dir, (error, paths) => {
-            if (error) return reject(error)
-            resolve(paths)
-          })
-        })
-        .then(paths => {
-          return new Promise((resolve, reject) => {
-            fs.access(dir, error => {
-              if (error) return resolve(false)
-              resolve(true)
-            })
-          })
-        })
-        .then(access => {
-          expect(access).to.be.true
-          done()
-        })
-        .catch(done)
+      before((done) => {
+        pane.write(dir, done)
       })
 
-      it ('writes only block that contain points to file', () => {
+      after((done) => {
+        fs.remove(dir, done)
+      })
+
+      it ('creates a directory and write all block images to that directory', (done) => {
+        fs.access(dir, error => {
+          expect(error).to.be.nil
+          done()
+        })
+      })
+
+      it ('writes only block that contain points to file', (done) => {
+        fs.readdir(dir, (error, files) => {
+          expect(files.length).to.equal(2)
+          done()
+        })
       })
 
     })
