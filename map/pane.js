@@ -99,7 +99,8 @@ class Pane {
         blocks[key] = {
           points: new Set(),
           all: new Set(),
-          bounds: this.bounds(key)
+          bounds: this.bounds(key),
+          key: key
         }
       }
 
@@ -155,9 +156,19 @@ class Pane {
       })
     }).then(() => {
       let blocks = Object.keys(this.blocks).filter(block => (this.blocks[block].points.size > 0))
-      callback()
+      let promises = blocks.map(block => {
+        return new Promise((resolve, reject) => {
+          let path = `${directory}/${block}.png`
+          fs.writeFile(path, this.draw(this.blocks[block]).toBuffer(), error => {
+            if (error) return reject(error)
+            resolve(path)
+          })
+        })
+      })
+      return Promise.all(promises)
+    }).then((paths) => {
+      callback(null, paths)
     }).catch(err => {
-      console.log (err)
       callback(err)
     })
   }
