@@ -70,8 +70,8 @@ describe('Pane', () => {
       expect(pane.bounds(key)).to.deep.equal({
         min: { x: 103.3, y: 12.4 },
         max: { x: 103.6, y: 12.7 },
-        radians: 0.43552362366419334,
-        size: 46.630427797004934
+        radians: 0.0011377370489601272,
+        size: 32.59052667505927
       })
     })
 
@@ -124,27 +124,22 @@ describe('Pane', () => {
       pane = new Pane
     })
 
-    it ('draws the block and returns an image', (done) => {
+    it ('draws the block and returns an image', () => {
       let block = {
         points: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
         all: new Set([{ longitude: 103.412, latitude: 12.5231 }]),
-        bounds: { min: { x: 103.3, y: 12.4 }, max: { x: 103.6, y: 12.7 }, radians: 0.43552362366419334 }
+        bounds: { min: { x: 103.3, y: 12.4 }, max: { x: 103.6, y: 12.7 }, radians: 0.0011377370489601272, size: 32.59052667505927 }
       }
 
       let canvas = pane.draw(block)
-      fs.readFile(__dirname + '/blank.png', function(err, blank){
-        if (err) throw err
 
-        let image = new Image
-        image.src = blank
+      let hash1 = crypto.createHash('md5')
+      hash1.update(canvas.toBuffer())
 
-        let blankCanvas = new Canvas(image.width, image.height)
-          , blankContext = blankCanvas.getContext('2d')
-        blankContext.drawImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height)
-        expect(canvas.toDataURL()).to.equal(blankCanvas.toDataURL())
-        done()
-      })
+      let hash2 = crypto.createHash('md5')
+      hash2.update(fs.readFileSync(`${__dirname}/blank.png`))
 
+      expect(hash2.digest('hex')).to.equal(hash1.digest('hex'))
     })
 
   })

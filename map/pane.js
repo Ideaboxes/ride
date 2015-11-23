@@ -70,7 +70,7 @@ class Pane {
     let nw = turf.point([minX, maxY])
       , ne = turf.point([maxX, maxY])
       , sw = turf.point([minX, minY])
-      , se = turf.point([maxX, maxY])
+      , se = turf.point([maxX, minY])
 
     let km1 = turf.distance(nw, ne)
       , km2 = turf.distance(nw, sw)
