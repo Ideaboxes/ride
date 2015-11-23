@@ -2,6 +2,7 @@
 
 let chai = require('chai')
   , fs = require('fs-extra')
+  , crypto = require('crypto')
   , Canvas = require('canvas')
 
 let expect = chai.expect
@@ -190,6 +191,19 @@ describe('Pane', () => {
         fs.readdir(dir, (error, files) => {
           expect(files.length).to.equal(2)
           done()
+        })
+      })
+
+      it ('draws correct part to the file', () => {
+        let blocks = ['103.8,1.2,103.9,1.3.png', '103.8,1.3,103.9,1.4.png']
+        blocks.forEach(block => {
+          let hash1 = crypto.createHash('md5')
+          hash1.update(fs.readFileSync(`${__dirname}/${block}`))
+
+          let hash2 = crypto.createHash('md5')
+          hash2.update(fs.readFileSync(`${dir}/${block}`))
+
+          expect(hash2.digest('hex')).to.equal(hash1.digest('hex'))
         })
       })
 
