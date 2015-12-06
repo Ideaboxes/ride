@@ -52,7 +52,7 @@ describe('User', function() {
 
       beforeAll(done => {
         User.register({
-          email: 'newuser.email.com',
+          email: 'newuser@email.com',
           password: 'password'
         }).then(record => {
           user = record
@@ -73,7 +73,7 @@ describe('User', function() {
 
       it ('set confirmHash', () => {
         expect(user.confirmHash).toBeDefined()
-        expect(user.confirmHash.length).toGreaterThan(0)
+        expect(user.confirmHash.length).toBeGreaterThan(0)
       })
 
     })
