@@ -14,21 +14,30 @@ let User = db.define('User', {
       return User.findOne({
         where: { email: email }
       }).then((user) => {
-        return new Promise((resolve, reject) => {
-          if (!user) return reject()
+        if (!user) return Promise.reject('User is not found')
 
+        return new Promise((resolve, reject) => {
           bcrypt.compare(password, user.password, (error, result) => {
             if (result) return resolve()
-            reject()
+            reject('Invalid password')
           })
         })
       })
     },
 
     register(hash) {
-      return new Promise((resolve, reject) => {
-        reject()
+      if (!hash) return Promise.reject('Register requires arguments')
+      if (!hash.email) return Promise.reject('Email is required')
+      if (!hash.password) return Promise.reject('Password is required')
+
+      return User.findOne({
+        where: { email: hash.email }
+      }).then(user => {
+        if (user) return Promise.reject('Email is already exist')
+
+        return User.create(hash)
       })
+
     }
   }
 })
