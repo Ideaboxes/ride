@@ -3,6 +3,7 @@
 let db = require('./db')
   , Sequelize = require('sequelize')
   , bcrypt = require('bcrypt')
+  , crypto = require('crypto')
 
 let User = db.define('User', {
   email: Sequelize.STRING,
@@ -34,8 +35,29 @@ let User = db.define('User', {
         where: { email: hash.email }
       }).then(user => {
         if (user) return Promise.reject('Email is already exist')
+        return new Promise((resolve, reject) => {
+          bcrypt.genSalt(10, (err, salt) => {
+            if (err) return reject(err)
+            resolve(salt)
+          })
+        })
+      }).then(salt => {
+        return new Promise((resolve, reject) => {
+          bcrypt.hash(hash.password, salt, (err, password) => {
+            if (err) return reject(err)
+            resolve(password)
+          })
+        })
+      }).then(password => {
+        let md5 = crypto.createHash('md5')
+        md5.update(password)
 
-        return User.create(hash)
+        let finalHash = Object.assign({}, hash, {
+          password: password,
+          confirmHash: md5.digest('hex')
+        })
+
+        return User.create(finalHash)
       })
 
     }
