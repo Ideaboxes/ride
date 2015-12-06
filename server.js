@@ -21,7 +21,13 @@ app.get('/data', (req, res) => {
   })
 })
 
-console.log (routes)
+Object.keys(routes).forEach(module => {
+  let route = routes[module].create()
+    , paths = route.paths()
+  paths.forEach(path => {
+    app[path.method](path.path, path.handler)
+  })
+})
 
 let server = app.listen(3000, () => {
   let address = server.address()
