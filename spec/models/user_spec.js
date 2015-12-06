@@ -46,20 +46,36 @@ describe('User', function() {
 
   describe('#register', () => {
 
-    it ('creates new user and resolve', (done) => {
-      User.register({
-        email: 'newuser@email.com',
-        password: 'password'
+    describe('create success', () => {
+
+      let user = null
+
+      beforeAll(done => {
+        User.register({
+          email: 'newuser.email.com',
+          password: 'password'
+        }).then(record => {
+          user = record
+          done()
+        })
       })
-      .then((user) => {
-        expect(user.confirmHash)
-        return User.count()
+
+      it ('increase user count', done => {
+        User.count().then(total => {
+          expect(total).toEqual(2)
+          done()
+        })
       })
-      .then(total => {
-        expect(total).toEqual(2)
-        done()
+
+      it ('hash password', () => {
+        expect(user.password).not.toEqual('password')
       })
-      .catch(done.fail)
+
+      it ('set confirmHash', () => {
+        expect(user.confirmHash).toBeDefined()
+        expect(user.confirmHash.length).toGreaterThan(0)
+      })
+
     })
 
     it ('rejects when email is already exists', (done) => {
