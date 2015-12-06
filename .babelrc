@@ -1,0 +1,8 @@
+{
+  "presets": [ "es2015", "react" ],
+  "only": [
+    "public/**/*.js",
+    "node_modules/**/*",
+    "spec/public/**/*.js"
+  ]
+}
