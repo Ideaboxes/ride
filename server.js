@@ -5,7 +5,7 @@ let sqlite3 = require('sqlite3')
   , app = express()
 
 let db = new sqlite3.Database('./data.db')
-  , routes = require('./routes')
+  , routes = require('./app/routes')
 
 app.use(express.static('public'))
 app.get('/data', (req, res) => {

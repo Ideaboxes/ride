@@ -12,8 +12,8 @@ try {
 } catch (e) {
 }
 
-let db = require('../../models/db')
-  , user = require('../../models/user')
+let db = require('../../app/models/db')
+  , user = require('../../app/models/user')
   , created = false
 
 db.sync({ force: true }).then(function() { created = true })

@@ -2,7 +2,7 @@
 
 let bcrypt = require('bcrypt')
 
-let User = require('../../models/user')
+let User = require('../../../app/models/user')
 
 describe('User', function() {
 

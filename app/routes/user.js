@@ -13,8 +13,13 @@ class UserRoute {
     ]
   }
 
-  login(request, response) {}
-  register(request, response) {}
+  login(request, response) {
+    response.json({ success: true })
+  }
+
+  register(request, response) {
+    response.json({ success: true })
+  }
 
 }
 

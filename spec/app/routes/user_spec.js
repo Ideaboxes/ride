@@ -1,7 +1,7 @@
 'use strict'
 
-let UserRoute = require('../../routes/user')
-  , User = require('../../models/user')
+let UserRoute = require('../../../app/routes/user')
+  , User = require('../../../app/models/user')
 
 describe('User Route', function() {
 
