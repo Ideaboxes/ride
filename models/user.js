@@ -5,13 +5,14 @@ let db = require('./db')
   , bcrypt = require('bcrypt')
 
 let User = db.define('User', {
-  username: Sequelize.STRING,
-  password: Sequelize.STRING
+  email: Sequelize.STRING,
+  password: Sequelize.STRING,
+  confirmHash: Sequelize.STRING
 }, {
   classMethods: {
-    authenticate(username, password) {
+    authenticate(email, password) {
       return User.findOne({
-        where: { username: username }
+        where: { email: email }
       }).then((user) => {
         return new Promise((resolve, reject) => {
           if (!user) return reject()
@@ -21,6 +22,12 @@ let User = db.define('User', {
             reject()
           })
         })
+      })
+    },
+
+    register(hash) {
+      return new Promise((resolve, reject) => {
+        reject()
       })
     }
   }
