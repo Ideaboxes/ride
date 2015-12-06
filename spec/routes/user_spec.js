@@ -14,10 +14,10 @@ describe('User Route', function() {
   describe('#paths', () => {
 
     it ('returns all path with functions to handle the request', () => {
-      expect(route.paths()).toEqual({
-        '/users/login': jasmine.any(Function),
-        '/users/register': jasmine.any(Function)
-      })
+      expect(route.paths()).toEqual([
+        { path: '/users/login', method: 'post', handler: jasmine.any(Function) },
+        { path: '/users/register', method: 'post', handler: jasmine.any(Function) },
+      ])
     })
 
   })

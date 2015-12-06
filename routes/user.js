@@ -7,10 +7,10 @@ class UserRoute {
   }
 
   paths() {
-    return {
-      '/users/login': this.login,
-      '/users/register': this.register
-    }
+    return [
+      { path: '/users/login', method: 'post', handler: this.login },
+      { path: '/users/register', method: 'post', handler: this.register }
+    ]
   }
 
   login(request, response) {}
