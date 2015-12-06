@@ -1,3 +1,6 @@
+@import 'foundation/foundation';
+@include foundation-everything;
+
 #application {
   height: 100vh;
   display: flex;
