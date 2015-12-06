@@ -1,4 +1,6 @@
 @import 'foundation/foundation';
+@import 'font-awesome/font-awesome';
+
 @include foundation-everything;
 
 #application {
@@ -9,6 +11,11 @@
 .container {
   display: flex;
   flex: 1;
+  flex-direction: column;
+}
+
+.navigation {
+
 }
 
 .map {

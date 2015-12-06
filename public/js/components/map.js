@@ -42,7 +42,7 @@ class Map extends React.Component {
     // })
     map.fitBounds(bounds)
 
-    this.draw(map)
+    // this.draw(map)
   }
 
   // Draw an overlay
