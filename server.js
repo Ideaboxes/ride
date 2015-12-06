@@ -5,6 +5,7 @@ let sqlite3 = require('sqlite3')
   , app = express()
 
 let db = new sqlite3.Database('./data.db')
+  , routes = require('./routes')
 
 app.use(express.static('public'))
 app.get('/data', (req, res) => {
@@ -19,6 +20,8 @@ app.get('/data', (req, res) => {
     })
   })
 })
+
+console.log (routes)
 
 let server = app.listen(3000, () => {
   let address = server.address()

@@ -1,16 +1,23 @@
 'use strict'
 
-// let UserRoute = require('../../routes/user')
-//   , User = require('../../models/user')
+let UserRoute = require('../../routes/user')
+  , User = require('../../models/user')
 
 describe('User Route', function() {
 
   let route = null
 
-  describe('#login', () => {
+  beforeAll(() => {
+    route = UserRoute.create()
+  })
 
-    it ('returns success page', () => {
+  describe('#paths', () => {
 
+    it ('returns all path with functions to handle the request', () => {
+      expect(route.paths()).toEqual(jasmine.objectContaining({
+        '/users/login': jasmine.any(Function),
+        '/users/regiser': jasmine.any(Function)
+      }))
     })
 
   })
