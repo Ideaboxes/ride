@@ -20,7 +20,7 @@ describe('User', function() {
   })
 
   afterAll((done) => {
-    user.destroy().then(done)
+    User.truncate().then(done)
   })
 
   describe('#authenticate', () => {
@@ -86,7 +86,7 @@ describe('User', function() {
       })
       .then(done.fail)
       .catch(error => {
-        expect(error).toEqual(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST, 'Email is already exist'))
+        expect(error).toEqual(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST))
         done()
       })
     })

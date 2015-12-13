@@ -30,13 +30,14 @@ let User = db.define('User', {
 
     register(hash) {
       if (!hash) return Promise.reject('Register requires arguments')
-      if (!hash.email) return Promise.reject('Email is required')
-      if (!hash.password) return Promise.reject('Password is required')
+      if (!hash.email) return Promise.reject(new Fail(Fail.ERROR_EMAIL_IS_REQUIRED))
+      if (!hash.password) return Promise.reject(new Fail(Fail.ERROR_PASSWORD_IS_REQUIRED))
 
       return User.findOne({
         where: { email: hash.email }
       }).then(user => {
-        if (user) return Promise.reject(new Fail(100, 'Email is already exist'))
+        if (user) return Promise.reject(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST))
+
         return new Promise((resolve, reject) => {
           bcrypt.genSalt(10, (err, salt) => {
             if (err) return reject(err)

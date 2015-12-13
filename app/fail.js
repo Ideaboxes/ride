@@ -2,13 +2,14 @@
 
 class Fail {
 
-  constructor(code, message) {
+  constructor(code) {
     this.code = code
-    this.message = message
   }
 
 }
 
 Fail.ERROR_EMAIL_ALREADY_EXIST = 100
+Fail.ERROR_EMAIL_IS_REQUIRED = 101
+Fail.ERROR_PASSWORD_IS_REQUIRED = 102
 
 module.exports = Fail

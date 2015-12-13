@@ -22,12 +22,13 @@ class UserRoute {
   register(request, response) {
     User.register(request.body)
       .then(user => {
-        console.log ('user', user)
-        response.json({ success: true })
+        response.json({ user: {
+          id: user.id,
+          email: user.email
+        }})
       })
       .catch(error => {
-        console.log ('error', error)
-        response.json({ success: false })
+        response.json({ error: error })
       })
   }
 

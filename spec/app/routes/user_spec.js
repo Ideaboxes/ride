@@ -34,7 +34,7 @@ describe('User Route', function() {
     })
 
     afterAll((done) => {
-      User.destroy().then(done)
+      User.truncate().then(done)
     })
 
     it ('returns user object after success register', (done) => {
@@ -44,7 +44,7 @@ describe('User Route', function() {
         json(data) {
           expect(data).toEqual({
             user: {
-              id: 1,
+              id: jasmine.any(Number),
               email: 'newuser@email.com'
             }
           })
@@ -61,10 +61,7 @@ describe('User Route', function() {
       }, response = {
         json(data) {
           expect(data).toEqual({
-            error: {
-              code: 100,
-              message: 'User is already exist'
-            }
+            error: new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST)
           })
           done()
         }
