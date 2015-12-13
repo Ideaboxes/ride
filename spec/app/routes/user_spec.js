@@ -1,5 +1,7 @@
 'use strict'
 
+let bcrypt = require('bcrypt')
+
 let UserRoute = require('../../../app/routes/user')
   , User = require('../../../app/models/user')
 
@@ -24,15 +26,49 @@ describe('User Route', function() {
 
   describe('#register', () => {
 
+    beforeAll((done) => {
+      User.create({
+        email: 'user@email.com',
+        password: bcrypt.hashSync('password', bcrypt.genSaltSync())
+      }).then(done)
+    })
+
+    afterAll((done) => {
+      User.destroy().then(done)
+    })
+
     it ('returns user object after success register', (done) => {
-      let request = {}
-        , response = {
-          json(data) {
-            done()
-          }
+      let request = {
+        body: { email: 'newuser@email.com', password: 'password' }
+      }, response = {
+        json(data) {
+          expect(data).toEqual({
+            user: {
+              id: 1,
+              email: 'newuser@email.com'
+            }
+          })
+          done()
         }
+      }
 
+      route.register(request, response)
+    })
 
+    it ('returns error message when user is exists', (done) => {
+      let request = {
+        body: { email: 'user@email.com', password: 'password' }
+      }, response = {
+        json(data) {
+          expect(data).toEqual({
+            error: {
+              code: 100,
+              message: 'User is already exist'
+            }
+          })
+          done()
+        }
+      }
 
       route.register(request, response)
     })
