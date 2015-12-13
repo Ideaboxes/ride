@@ -5,6 +5,8 @@ let db = require('./db')
   , bcrypt = require('bcrypt')
   , crypto = require('crypto')
 
+let Fail = require('../fail')
+
 let User = db.define('User', {
   email: Sequelize.STRING,
   password: Sequelize.STRING,
@@ -34,7 +36,7 @@ let User = db.define('User', {
       return User.findOne({
         where: { email: hash.email }
       }).then(user => {
-        if (user) return Promise.reject('Email is already exist')
+        if (user) return Promise.reject(new Fail(100, 'Email is already exist'))
         return new Promise((resolve, reject) => {
           bcrypt.genSalt(10, (err, salt) => {
             if (err) return reject(err)

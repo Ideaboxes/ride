@@ -1,5 +1,7 @@
 'use strict'
 
+let User = require('../models/user')
+
 class UserRoute {
 
   static create() {
@@ -18,8 +20,15 @@ class UserRoute {
   }
 
   register(request, response) {
-    console.log (request.body)
-    response.json({ success: true })
+    User.register(request.body)
+      .then(user => {
+        console.log ('user', user)
+        response.json({ success: true })
+      })
+      .catch(error => {
+        console.log ('error', error)
+        response.json({ success: false })
+      })
   }
 
 }

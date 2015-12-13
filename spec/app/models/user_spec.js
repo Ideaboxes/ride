@@ -3,6 +3,7 @@
 let bcrypt = require('bcrypt')
 
 let User = require('../../../app/models/user')
+  , Fail = require('../../../app/fail')
 
 describe('User', function() {
 
@@ -84,7 +85,10 @@ describe('User', function() {
         password: 'password'
       })
       .then(done.fail)
-      .catch(done)
+      .catch(error => {
+        expect(error).toEqual(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST, 'Email is already exist'))
+        done()
+      })
     })
 
   })
