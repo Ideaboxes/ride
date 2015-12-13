@@ -4,6 +4,7 @@ let bcrypt = require('bcrypt')
 
 let UserRoute = require('../../../app/routes/user')
   , User = require('../../../app/models/user')
+  , Fail = require('../../../app/fail')
 
 describe('User Route', function() {
 
