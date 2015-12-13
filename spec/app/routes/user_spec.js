@@ -22,4 +22,21 @@ describe('User Route', function() {
 
   })
 
+  describe('#register', () => {
+
+    it ('returns user object after success register', (done) => {
+      let request = {}
+        , response = {
+          json(data) {
+            done()
+          }
+        }
+
+
+
+      route.register(request, response)
+    })
+
+  })
+
 })

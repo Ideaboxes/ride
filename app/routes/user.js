@@ -18,6 +18,7 @@ class UserRoute {
   }
 
   register(request, response) {
+    console.log (request.body)
     response.json({ success: true })
   }
 

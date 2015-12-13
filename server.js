@@ -3,11 +3,16 @@
 let sqlite3 = require('sqlite3')
   , express = require('express')
   , app = express()
+  , bodyParser = require('body-parser')
 
 let db = new sqlite3.Database('./data.db')
   , routes = require('./app/routes')
 
 app.use(express.static('public'))
+
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }))
+
 app.get('/data', (req, res) => {
   res.type('application/json')
   db.serialize(() => {

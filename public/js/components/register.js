@@ -1,22 +1,49 @@
-import React from 'react'
+import React, { Component } from 'react'
 
-export default () => (
-  <form className="register" action="/users/register" method="post">
+class Register extends Component {
 
-    <div className="row">
-      <div className="small-offset-4 small-4 columns">
-        <label>
-          Username
-          <input name="username" type="text" placeholder="Username"></input>
-        </label>
+  constructor(props) {
+    super(props)
+  }
 
-        <label>
-          Password
-          <input name="password" type="Password" placeholder="Password"></input>
-        </label>
+  register(event) {
+    event.preventDefault()
 
-        <button>Register</button>
+    fetch('/users/register', {
+      method: 'post',
+      body: this.refs.form,
+      credential: 'include'
+    }).then(res => res.json())
+      .then(json => {
+        console.log (json)
+      })
+      .catch(err => {
+        console.error (err)
+      })
+  }
+
+  render() {
+    return (<form ref='form' className='register' onSubmit={this.register.bind(this)}>
+
+      <div className='row'>
+        <div className='small-offset-4 small-4 columns'>
+          <label>
+            Username
+            <input name='username' type='text' placeholder='Username' required></input>
+          </label>
+
+          <label>
+            Password
+            <input name='password' type='Password' placeholder='Password' required></input>
+          </label>
+
+          <button>Register</button>
+        </div>
       </div>
-    </div>
 
-  </form>)
+    </form>)
+  }
+
+}
+
+export default Register

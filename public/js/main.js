@@ -4,15 +4,13 @@ import React from 'react'
 import { render } from 'react-dom'
 import { Router, Route, IndexRoute } from 'react-router'
 
-import history from './history'
-
 import Application from './components/application'
 import Map from './components/map'
 import Login from './components/login'
 import Register from './components/register'
 
 render((
-  <Router history={history}>
+  <Router>
     <Route path='/' component={Application}>
       <IndexRoute component={Map} />
       <Route path='login' component={Login} />
