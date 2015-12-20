@@ -16,16 +16,19 @@ class UserRoute {
   }
 
   login(request, response) {
-    response.json({ success: true })
+    User.authenticate(request.body.email, request.body.password)
+      .then(user => {
+        response.json({ user: user.json() })
+      })
+      .catch(error => {
+        response.json({ error: error })
+      })
   }
 
   register(request, response) {
     User.register(request.body)
       .then(user => {
-        response.json({ user: {
-          id: user.id,
-          email: user.email
-        }})
+        response.json({ user: user.json() })
       })
       .catch(error => {
         response.json({ error: error })

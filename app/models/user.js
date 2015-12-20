@@ -64,6 +64,14 @@ let User = db.define('User', {
       })
 
     }
+  },
+  instanceMethods: {
+    json() {
+      return {
+        id: this.id,
+        email: this.email
+      }
+    }
   }
 })
 

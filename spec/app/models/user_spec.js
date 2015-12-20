@@ -23,6 +23,17 @@ describe('User', function() {
     User.truncate().then(done)
   })
 
+  describe('#json', () => {
+
+    it ('returns only id and email', () => {
+      expect(user.json()).toEqual({
+        id: jasmine.any(Number),
+        email: 'user@email.com'
+      })
+    })
+
+  })
+
   describe('#authenticate', () => {
 
     it ('resolves when authenticate success', (done) => {
