@@ -17,12 +17,12 @@ let User = db.define('User', {
       return User.findOne({
         where: { email: email }
       }).then((user) => {
-        if (!user) return Promise.reject('User is not found')
+        if (!user) return Promise.reject(new Fail(Fail.ERROR_NO_USER_FOUND))
 
         return new Promise((resolve, reject) => {
           bcrypt.compare(password, user.password, (error, result) => {
             if (result) return resolve()
-            reject('Invalid password')
+            reject(new Fail(Fail.ERROR_INVALID_PASSWORD))
           })
         })
       })
