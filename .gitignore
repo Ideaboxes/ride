@@ -6,7 +6,6 @@ node_modules
 
 public/css/bundle.*
 public/js/bundle.js
-data.db
-test.db
+*.db
 
 specs/map/blocks
