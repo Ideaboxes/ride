@@ -1,5 +1,7 @@
 'use strict'
 
+require('dotenv').load()
+
 let sqlite3 = require('sqlite3')
   , express = require('express')
   , app = express()
