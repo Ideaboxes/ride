@@ -38,7 +38,10 @@ describe('User', function() {
 
     it ('resolves when authenticate success', (done) => {
       User.authenticate('user@email.com', 'password')
-        .then(done)
+        .then(user => {
+          expect(user).toBeDefined()
+          done()
+        })
         .catch(done.fail)
     })
 
