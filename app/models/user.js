@@ -21,7 +21,7 @@ let User = db.define('User', {
 
         return new Promise((resolve, reject) => {
           bcrypt.compare(password, user.password, (error, result) => {
-            if (result) return resolve()
+            if (result) return resolve(user)
             reject(new Fail(Fail.ERROR_INVALID_PASSWORD))
           })
         })
