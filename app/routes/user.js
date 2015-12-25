@@ -12,7 +12,9 @@ class UserRoute {
   paths() {
     return [
       { path: '/users/login', method: 'post', handler: this.login },
-      { path: '/users/register', method: 'post', handler: this.register }
+      { path: '/users/logout', method: 'get', handler: this.logout },
+      { path: '/users/register', method: 'post', handler: this.register },
+      { path: '/users/me', method: 'get', handler: this.me }
     ]
   }
 
