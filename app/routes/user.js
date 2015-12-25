@@ -28,9 +28,13 @@ class UserRoute {
   register(request, response) {
     User.register(request.body)
       .then(user => {
+        response.set('Location', '#/login')
+        response.status(302)
         response.json({ user: user.json() })
       })
       .catch(error => {
+        response.set('Location', `#/register?error=${error.code}`)
+        response.status(302)
         response.json({ error: error })
       })
   }

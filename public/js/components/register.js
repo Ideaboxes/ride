@@ -9,9 +9,11 @@ class Register extends Component {
   register(event) {
     event.preventDefault()
 
+    console.log (new FormData(this.refs.form))
+
     fetch('/users/register', {
       method: 'post',
-      body: this.refs.form,
+      body: new FormData(this.refs.form),
       credential: 'include'
     }).then(res => res.json())
       .then(json => {
@@ -23,18 +25,18 @@ class Register extends Component {
   }
 
   render() {
-    return (<form ref='form' className='register' onSubmit={this.register.bind(this)}>
+    return (<form ref='form' id='registerForm' className='register' action="/users/register">
 
       <div className='row'>
         <div className='small-offset-4 small-4 columns'>
           <label>
-            Username
-            <input name='username' type='text' placeholder='Username' required></input>
+            Email
+            <input name='email' form='registerForm' type='email' placeholder='Email' required></input>
           </label>
 
           <label>
             Password
-            <input name='password' type='Password' placeholder='Password' required></input>
+            <input name='password' form='registerForm' type='password' placeholder='Password' required></input>
           </label>
 
           <button>Register</button>

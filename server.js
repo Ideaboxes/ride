@@ -6,10 +6,16 @@ let sqlite3 = require('sqlite3')
   , express = require('express')
   , app = express()
   , bodyParser = require('body-parser')
+  , session = require('express-session')
 
 let db = new sqlite3.Database('./data.db')
   , routes = require('./app/routes')
 
+app.use(session({
+  secret: process.env.COOKIE_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 360000 } }))
 app.use(express.static('public'))
 
 app.use(bodyParser.json())

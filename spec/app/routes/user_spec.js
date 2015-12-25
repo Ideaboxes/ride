@@ -37,10 +37,15 @@ describe('User Route', function() {
   describe('#register', () => {
 
     it ('returns user object after success register', (done) => {
+      let statusCode
       let request = {
         body: { email: 'newuser@email.com', password: 'password' }
       }, response = {
+        status: jasmine.createSpy('status'),
+        set: jasmine.createSpy('set'),
         json(data) {
+          expect(response.status).toHaveBeenCalledWith(302)
+          expect(response.set).toHaveBeenCalledWith('Location', '#/login')
           expect(data).toEqual({
             user: {
               id: jasmine.any(Number),
@@ -58,7 +63,11 @@ describe('User Route', function() {
       let request = {
         body: { email: 'user@email.com', password: 'password' }
       }, response = {
+        status: jasmine.createSpy('status'),
+        set: jasmine.createSpy('set'),
         json(data) {
+          expect(response.status).toHaveBeenCalledWith(302)
+          expect(response.set).toHaveBeenCalledWith('Location', `#/register?error=${Fail.ERROR_EMAIL_ALREADY_EXIST}`)
           expect(data).toEqual({
             error: new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST)
           })
