@@ -9,25 +9,9 @@ class Login extends React.Component {
     this.state = {}
   }
 
-  login(event) {
-    event.preventDefault()
-
-    fetch('/users/login', {
-      method: 'post',
-      body: this.refs.form,
-      credential: 'include'
-    }).then(res => res.json())
-      .then(json => {
-        console.log (json)
-      })
-      .catch(err => {
-        console.error (err)
-      })
-  }
-
   render() {
     return (
-      <form className="login" onSubmit={this.login.bind(this)}>
+      <form className="login" method="post" action="/users/login">
 
         <div className="row">
           <div className="small-offset-4 small-4 columns">

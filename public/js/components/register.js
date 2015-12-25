@@ -6,26 +6,8 @@ class Register extends Component {
     super(props)
   }
 
-  register(event) {
-    event.preventDefault()
-
-    console.log (new FormData(this.refs.form))
-
-    fetch('/users/register', {
-      method: 'post',
-      body: new FormData(this.refs.form),
-      credential: 'include'
-    }).then(res => res.json())
-      .then(json => {
-        console.log (json)
-      })
-      .catch(err => {
-        console.error (err)
-      })
-  }
-
   render() {
-    return (<form ref='form' id='registerForm' className='register' action="/users/register">
+    return (<form className='register' method='post' action='/users/register'>
 
       <div className='row'>
         <div className='small-offset-4 small-4 columns'>

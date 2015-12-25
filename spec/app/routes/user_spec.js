@@ -45,7 +45,7 @@ describe('User Route', function() {
         set: jasmine.createSpy('set'),
         json(data) {
           expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', '#/login')
+          expect(response.set).toHaveBeenCalledWith('Location', '/#/login')
           expect(data).toEqual({
             user: {
               id: jasmine.any(Number),
@@ -67,7 +67,7 @@ describe('User Route', function() {
         set: jasmine.createSpy('set'),
         json(data) {
           expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', `#/register?error=${Fail.ERROR_EMAIL_ALREADY_EXIST}`)
+          expect(response.set).toHaveBeenCalledWith('Location', `/#/register?error=${Fail.ERROR_EMAIL_ALREADY_EXIST}`)
           expect(data).toEqual({
             error: new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST)
           })
@@ -84,15 +84,23 @@ describe('User Route', function() {
 
     it ('returns user object after success login', done => {
       let request = {
+        session: {},
         body: { email: 'user@email.com', password: 'password' }
       }, response = {
+        status: jasmine.createSpy('status'),
+        set: jasmine.createSpy('set'),
         json(data) {
-          expect(data).toEqual({
+          let user = {
             user: {
               id: jasmine.any(Number),
               email: 'user@email.com'
             }
-          })
+          }
+
+          expect(request.session.user).toEqual(user)
+          expect(response.status).toHaveBeenCalledWith(302)
+          expect(response.set).toHaveBeenCalledWith('Location', '/')
+          expect(data).toEqual(user)
           done()
         }
       }
@@ -102,9 +110,15 @@ describe('User Route', function() {
 
     it ('returns user is not exist when login fail', done => {
       let request = {
+        session: {},
         body: { email: 'nouser@email.com', password: 'password' }
       }, response = {
+        status: jasmine.createSpy('status'),
+        set: jasmine.createSpy('set'),
         json(data) {
+          expect(request.session.user).not.toBeDefined()
+          expect(response.status).toHaveBeenCalledWith(302)
+          expect(response.set).toHaveBeenCalledWith('Location', `/#/login?error=${Fail.ERROR_NO_USER_FOUND}`)
           expect(data).toEqual({
             error: new Fail(Fail.ERROR_NO_USER_FOUND)
           })
@@ -117,9 +131,15 @@ describe('User Route', function() {
 
     it ('returns invalid password when login fail', done => {
       let request = {
+        session: {},
         body: { email: 'user@email.com', password: 'invalidpassword' }
       }, response = {
+        status: jasmine.createSpy('status'),
+        set: jasmine.createSpy('set'),
         json(data) {
+          expect(request.session.user).not.toBeDefined()
+          expect(response.status).toHaveBeenCalledWith(302)
+          expect(response.set).toHaveBeenCalledWith('Location', `/#/login?error=${Fail.ERROR_INVALID_PASSWORD}`)
           expect(data).toEqual({
             error: new Fail(Fail.ERROR_INVALID_PASSWORD)
           })

@@ -18,9 +18,13 @@ class UserRoute {
   login(request, response) {
     User.authenticate(request.body.email, request.body.password)
       .then(user => {
+        response.set('Location', '/')
+        response.status(302)
         response.json({ user: user.json() })
       })
       .catch(error => {
+        response.set('Location', `/#/login?error=${error.code}`)
+        response.status(302)
         response.json({ error: error })
       })
   }
@@ -28,12 +32,12 @@ class UserRoute {
   register(request, response) {
     User.register(request.body)
       .then(user => {
-        response.set('Location', '#/login')
+        response.set('Location', '/#/login')
         response.status(302)
         response.json({ user: user.json() })
       })
       .catch(error => {
-        response.set('Location', `#/register?error=${error.code}`)
+        response.set('Location', `/#/register?error=${error.code}`)
         response.status(302)
         response.json({ error: error })
       })
