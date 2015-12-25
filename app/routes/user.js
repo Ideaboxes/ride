@@ -1,6 +1,7 @@
 'use strict'
 
 let User = require('../models/user')
+  , Fail = require('../fail')
 
 class UserRoute {
 
@@ -47,6 +48,13 @@ class UserRoute {
         response.status(302)
         response.json({ error: error })
       })
+  }
+
+  me(request, response) {
+    if (request.session.user) return response.json({ user: request.session.user })
+
+    response.status(404)
+    response.json({ error: new Fail(Fail.ERROR_NO_USER_FOUND) })
   }
 
 }

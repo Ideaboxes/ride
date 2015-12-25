@@ -181,7 +181,7 @@ describe('User Route', function() {
       },
       response = {
         json(data) {
-          expect(data).toEqual({ user: request.session })
+          expect(data).toEqual({ user: request.session.user })
           done()
         }
       }
@@ -192,13 +192,13 @@ describe('User Route', function() {
   })
 
   it ('returns not found if user session is not exist', done => {
-    let request = {}
+    let request = { session: {} }
       , response = {
         status: jasmine.createSpy('status'),
         json(data) {
           expect(response.status).toHaveBeenCalledWith(404)
           expect(data).toEqual({
-            error: Fail.ERROR_NO_USER_FOUND
+            error: new Fail(Fail.ERROR_NO_USER_FOUND)
           })
           done()
         }
