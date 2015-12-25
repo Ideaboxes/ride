@@ -91,16 +91,14 @@ describe('User Route', function() {
         set: jasmine.createSpy('set'),
         json(data) {
           let user = {
-            user: {
-              id: jasmine.any(Number),
-              email: 'user@email.com'
-            }
+            id: jasmine.any(Number),
+            email: 'user@email.com'
           }
 
           expect(request.session.user).toEqual(user)
           expect(response.status).toHaveBeenCalledWith(302)
           expect(response.set).toHaveBeenCalledWith('Location', '/')
-          expect(data).toEqual(user)
+          expect(data).toEqual({ user: user })
           done()
         }
       }
@@ -148,6 +146,27 @@ describe('User Route', function() {
       }
 
       route.login(request, response)
+    })
+
+  })
+
+  describe('#logout', () => {
+
+    it ('destroys session', (done) => {
+
+      let request = {
+        session: { destroy: jasmine.createSpy('destroy') }
+      }
+      let response = {
+        redirect(code, path) {
+          expect(code).toEqual(302)
+          expect(path).toEqual('/')
+          expect(request.session.destroy).toHaveBeenCalled()
+          done()
+        }
+      }
+
+      route.logout(request, response)
     })
 
   })

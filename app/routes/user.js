@@ -18,6 +18,7 @@ class UserRoute {
   login(request, response) {
     User.authenticate(request.body.email, request.body.password)
       .then(user => {
+        request.session.user = user.json()
         response.set('Location', '/')
         response.status(302)
         response.json({ user: user.json() })
@@ -27,6 +28,11 @@ class UserRoute {
         response.status(302)
         response.json({ error: error })
       })
+  }
+
+  logout(request, response) {
+    request.session.destroy()
+    response.redirect(302, '/')
   }
 
   register(request, response) {
