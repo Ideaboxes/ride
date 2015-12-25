@@ -171,4 +171,40 @@ describe('User Route', function() {
 
   })
 
+  describe('#me', () => {
+
+    it ('returns user if session is exists', done => {
+      let request = {
+        session: {
+          user: { id: 1, email: 'email' }
+        }
+      },
+      response = {
+        json(data) {
+          expect(data).toEqual({ user: request.session })
+          done()
+        }
+      }
+
+      route.me(request, response)
+    })
+
+  })
+
+  it ('returns not found if user session is not exist', done => {
+    let request = {}
+      , response = {
+        status: jasmine.createSpy('status'),
+        json(data) {
+          expect(response.status).toHaveBeenCalledWith(404)
+          expect(data).toEqual({
+            error: Fail.ERROR_NO_USER_FOUND
+          })
+          done()
+        }
+      }
+
+    route.me(request, response)
+  })
+
 })
