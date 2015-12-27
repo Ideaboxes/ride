@@ -11,21 +11,21 @@ class Login extends React.Component {
 
   render() {
     return (
-      <form className="login" method="post" action="/users/login">
+      <form className='login' method='post' action='/users/login'>
 
-        <div className="row">
-          <div className="small-offset-4 small-4 columns">
+        <div className='row'>
+          <div className='small-offset-4 small-4 columns'>
             <label>
               Email
-              <input type="email" placeholder="Email" name="email"></input>
+              <input type='email' placeholder='Email' name='email'></input>
             </label>
 
             <label>
               Password
-              <input type="password" placeholder="Password" name="password"></input>
+              <input type='password' placeholder='Password' name='password'></input>
             </label>
 
-            <button type="submit">Login</button>
+            <button type='submit'>Login</button>
             <Link to='/register'>Register</Link>
           </div>
         </div>

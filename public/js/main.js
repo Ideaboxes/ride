@@ -8,6 +8,7 @@ import Application from './components/application'
 import Map from './components/map'
 import Login from './components/login'
 import Register from './components/register'
+import Profile from './components/profile'
 
 render((
   <Router>
@@ -15,6 +16,8 @@ render((
       <IndexRoute component={Map} />
       <Route path='login' component={Login} />
       <Route path='register' component={Register} />
+
+      <Route path='profile' component={Profile} />
     </Route>
   </Router>
-  ), document.getElementById("application"))
+  ), document.getElementById('application'))

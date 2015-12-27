@@ -22,25 +22,30 @@ class Navigation extends Component {
   render() {
     let userMenu = null
     if (!this.state.loading) {
-      userMenu = (<li className="menu-text"><Link to="/login">Login</Link></li>)
+      userMenu = (
+        <ul className='menu'>
+          <li className='menu-text'><Link to='/login'>Login</Link></li>
+        </ul>
+        )
       if (this.state.user) {
-        userMenu = <li className="menu-text"><a href="/users/logout">Logout</a></li>
+        userMenu = (
+          <ul className='menu'>
+            <li className='menu-text'><Link to='/profile'>Profile</Link></li>
+            <li className='menu-text'><a href='/users/logout'>Logout</a></li>
+          </ul>
+          )
       }
     }
 
-    console.log (this.state)
-
     return (
-      <div className="top-bar navigation">
-        <div className="top-bar-left">
-          <ul className="menu">
-            <li className="menu-text">Flame</li>
+      <div className='top-bar navigation'>
+        <div className='top-bar-left'>
+          <ul className='menu'>
+            <li className='menu-text'>Flame</li>
           </ul>
         </div>
-        <div className="top-bar-right">
-          <ul className="menu">
-            {userMenu}
-          </ul>
+        <div className='top-bar-right'>
+          {userMenu}
         </div>
       </div>)
   }
