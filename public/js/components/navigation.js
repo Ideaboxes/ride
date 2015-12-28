@@ -5,36 +5,21 @@ class Navigation extends Component {
 
   constructor(props) {
     super(props)
-
-    this.state = { loading: true, user: null }
-
-    fetch('/users/me', { credentials: 'include' })
-      .then(data => data.json())
-      .then(json => {
-        let user = null
-        if (json.user) {
-          user = json.user
-        }
-        this.setState({ loading: false, user: user })
-      })
   }
 
   render() {
-    let userMenu = null
-    if (!this.state.loading) {
+    let userMenu = (
+    <ul className='menu'>
+      <li className='menu-text'><Link to='/login'>Login</Link></li>
+    </ul>
+    )
+    if (this.props.user) {
       userMenu = (
         <ul className='menu'>
-          <li className='menu-text'><Link to='/login'>Login</Link></li>
+          <li className='menu-text'><Link to='/profile'>Profile</Link></li>
+          <li className='menu-text'><a href='/v1/users/logout.json'>Logout</a></li>
         </ul>
         )
-      if (this.state.user) {
-        userMenu = (
-          <ul className='menu'>
-            <li className='menu-text'><Link to='/profile'>Profile</Link></li>
-            <li className='menu-text'><a href='/users/logout'>Logout</a></li>
-          </ul>
-          )
-      }
     }
 
     return (

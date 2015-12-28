@@ -7,7 +7,7 @@ class Register extends Component {
   }
 
   render() {
-    return (<form className='register' method='post' action='/users/register'>
+    return (<form className='register' method='post' action='/v1/users/register.json'>
 
       <div className='row'>
         <div className='small-offset-4 small-4 columns'>

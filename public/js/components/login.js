@@ -11,7 +11,7 @@ class Login extends React.Component {
 
   render() {
     return (
-      <form className='login' method='post' action='/users/login'>
+      <form className='login' method='post' action='/v1/users/login.json'>
 
         <div className='row'>
           <div className='small-offset-4 small-4 columns'>

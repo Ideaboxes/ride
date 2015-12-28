@@ -23,7 +23,8 @@ Object.keys(routes).forEach(module => {
   let route = routes[module].create()
     , paths = route.paths()
   paths.forEach(path => {
-    app[path.method](path.path, path.handler)
+    // Prefix and suffix all paths
+    app[path.method]('/v1' + path.path + '.json', path.handler)
   })
 })
 
