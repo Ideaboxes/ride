@@ -11,6 +11,7 @@ import Map from './components/map'
 import Login from './components/login'
 import Register from './components/register'
 import Profile from './components/profile'
+import NoMatch from './components/nomatch'
 
 import Main from './reducers/application'
 import * as Actions from './actions'
@@ -25,16 +26,30 @@ fetch('/v1/users/me.json', { credentials: 'include' })
       store.dispatch(Actions.setUser(json.user))
     }
 
+    let routes = (
+      <Route path='/' component={Application}>
+        <IndexRoute component={Map} />
+        <Route path='login' component={Login} />
+        <Route path='register' component={Register} />
+
+        <Route path="*" component={NoMatch}/>
+      </Route>)
+
+
+    if (json.user) {
+      routes = (
+        <Route path='/' component={Application}>
+          <IndexRoute component={Map} />
+          <Route path='profile' component={Profile} />
+
+          <Route path="*" component={NoMatch}/>
+        </Route>)
+    }
+
     render((
       <Provider store={store}>
         <Router>
-          <Route path='/' component={Application}>
-            <IndexRoute component={Map} />
-            <Route path='login' component={Login} />
-            <Route path='register' component={Register} />
-
-            <Route path='profile' component={Profile} />
-          </Route>
+          {routes}
         </Router>
       </Provider>
       ), document.getElementById('application'))

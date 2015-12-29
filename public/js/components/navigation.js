@@ -26,7 +26,7 @@ class Navigation extends Component {
       <div className='top-bar navigation'>
         <div className='top-bar-left'>
           <ul className='menu'>
-            <li className='menu-text'>Flame</li>
+            <li className='menu-text'><Link to='/'>Flame</Link></li>
           </ul>
         </div>
         <div className='top-bar-right'>
