@@ -8,7 +8,7 @@ let UserRoute = require('../../../app/routes/user')
 
 describe('User Route', function() {
 
-  let route = null
+  let route = null, user = null
 
   beforeAll(done => {
     route = UserRoute.create()
@@ -16,7 +16,10 @@ describe('User Route', function() {
     User.create({
       email: 'user@email.com',
       password: bcrypt.hashSync('password', bcrypt.genSaltSync())
-    }).then(done)
+    }).then(object => {
+      user = object
+      done()
+    })
   })
 
   afterAll(done => {
@@ -186,22 +189,62 @@ describe('User Route', function() {
       route.me(request, response)
     })
 
+    it ('returns not found if user session is not exist', done => {
+      let request = { session: {} }
+        , response = {
+          status: jasmine.createSpy('status'),
+          json(data) {
+            expect(response.status).toHaveBeenCalledWith(404)
+            expect(data).toEqual({
+              error: new Fail(Fail.ERROR_NO_USER_FOUND)
+            })
+            done()
+          }
+        }
+
+      route.me(request, response)
+    })
+
   })
 
-  it ('returns not found if user session is not exist', done => {
-    let request = { session: {} }
-      , response = {
-        status: jasmine.createSpy('status'),
+  describe('#update', () => {
+
+    it (`returns new user information after update`, done => {
+      let request = {
+        session: { user: user },
+        body: {
+          password: 'newpassword'
+        }
+      }
+      let response = {
         json(data) {
-          expect(response.status).toHaveBeenCalledWith(404)
+          expect(data).toEqual({ user: user })
+          done()
+        }
+      }
+      route.update(request, response)
+    })
+
+    it (`doesn't allow update if user is not logged in`, done => {
+      let request = {
+        session: {},
+        body: {
+          password: 'newpassword'
+        }
+      }
+      let response = {
+        json(data) {
+          expect(response.status).toHaveBeenCalledWith(403)
           expect(data).toEqual({
-            error: new Fail(Fail.ERROR_NO_USER_FOUND)
+            error: new Fail(Fail.ERROR_FORBIDDEN)
           })
           done()
         }
       }
 
-    route.me(request, response)
+      route.update(request, response)
+    })
+
   })
 
 })

@@ -7,7 +7,7 @@ class Profile extends Component {
   }
 
   render() {
-    return (<form className='profile' method='post' action='/users/update'>
+    return (<form className='profile' method='post' action='/v1/users/update.json'>
 
       <div className='row'>
         <div className='small-offset-4 small-4 columns'>
