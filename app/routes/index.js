@@ -1,5 +1,4 @@
 'use strict'
 
-let user = require('./user')
-
-exports.user = user
+exports.user = require('./user')
+exports.fitbit = require('./fitbit')

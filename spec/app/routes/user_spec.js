@@ -207,7 +207,7 @@ describe('User Route', function() {
 
   })
 
-  describe('#update', () => {
+  xdescribe('#update', () => {
 
     it (`returns new user information after update`, done => {
       let request = {
