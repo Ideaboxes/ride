@@ -1,8 +1,8 @@
-'use strict'
+'use strict';
 
-require('dotenv').load()
+require('dotenv').load();
 
-let db = require('./app/models/db')
-  , user = require('./app/models/user')
+let db = require('./app/models/db');
+require('./app/models/user');
 
-db.sync()
+db.sync();

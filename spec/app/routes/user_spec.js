@@ -1,250 +1,250 @@
-'use strict'
+'use strict';
 
-let bcrypt = require('bcrypt')
+let bcrypt = require('bcrypt');
 
-let UserRoute = require('../../../app/routes/user')
-  , User = require('../../../app/models/user')
-  , Fail = require('../../../app/fail')
+let UserRoute = require('../../../app/routes/user');
+let User = require('../../../app/models/user');
+let Fail = require('../../../app/fail');
 
-describe('User Route', function() {
-
-  let route = null, user = null
+describe('User Route', () => {
+  let route = null;
+  let user = null;
 
   beforeAll(done => {
-    route = UserRoute.create()
+    route = UserRoute.create();
 
     User.create({
       email: 'user@email.com',
-      password: bcrypt.hashSync('password', bcrypt.genSaltSync())
+      password: bcrypt.hashSync('password', bcrypt.genSaltSync()),
     }).then(object => {
-      user = object
-      done()
-    })
-  })
+      user = object;
+      done();
+    });
+  });
 
   afterAll(done => {
-    User.truncate().then(done)
-  })
+    User.truncate().then(done);
+  });
 
   describe('#paths', () => {
-
-    it ('returns all path with functions to handle the request', () => {
-      expect(route.paths()).toContain({ path: jasmine.any(String), method: jasmine.any(String), handler: jasmine.any(Function) })
-    })
-
-  })
+    it('returns all path with functions to handle the request', () => {
+      expect(route.paths()).toContain({
+        path: jasmine.any(String),
+        method: jasmine.any(String),
+        handler: jasmine.any(Function),
+      });
+    });
+  });
 
   describe('#register', () => {
-
-    it ('returns user object after success register', (done) => {
-      let statusCode
+    it('returns user object after success register', (done) => {
       let request = {
-        body: { email: 'newuser@email.com', password: 'password' }
-      }, response = {
+        body: { email: 'newuser@email.com', password: 'password' },
+      };
+      let response = {
         status: jasmine.createSpy('status'),
         set: jasmine.createSpy('set'),
         json(data) {
-          expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', '/#/login')
+          expect(response.status).toHaveBeenCalledWith(302);
+          expect(response.set).toHaveBeenCalledWith('Location', '/#/login');
           expect(data).toEqual({
             user: {
               id: jasmine.any(Number),
-              email: 'newuser@email.com'
-            }
-          })
-          done()
-        }
-      }
+              email: 'newuser@email.com',
+            },
+          });
+          done();
+        },
+      };
 
-      route.register(request, response)
-    })
+      route.register(request, response);
+    });
 
-    it ('returns error code when user is exists', (done) => {
+    it('returns error code when user is exists', (done) => {
       let request = {
-        body: { email: 'user@email.com', password: 'password' }
-      }, response = {
+        body: { email: 'user@email.com', password: 'password' },
+      };
+      let response = {
         status: jasmine.createSpy('status'),
         set: jasmine.createSpy('set'),
         json(data) {
-          expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', `/#/register?error=${Fail.ERROR_EMAIL_ALREADY_EXIST}`)
+          expect(response.status).toHaveBeenCalledWith(302);
+          expect(response.set).toHaveBeenCalledWith(
+            'Location',
+            `/#/register?error=${Fail.ERROR_EMAIL_ALREADY_EXIST}`);
           expect(data).toEqual({
-            error: new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST)
-          })
-          done()
-        }
-      }
+            error: new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST),
+          });
+          done();
+        },
+      };
 
-      route.register(request, response)
-    })
-
-  })
+      route.register(request, response);
+    });
+  });
 
   describe('#login', () => {
-
-    it ('returns user object after success login', done => {
+    it('returns user object after success login', done => {
       let request = {
         session: {},
-        body: { email: 'user@email.com', password: 'password' }
-      }, response = {
+        body: { email: 'user@email.com', password: 'password' },
+      };
+      let response = {
         status: jasmine.createSpy('status'),
         set: jasmine.createSpy('set'),
         json(data) {
-          let user = {
+          let object = {
             id: jasmine.any(Number),
-            email: 'user@email.com'
-          }
+            email: 'user@email.com',
+          };
 
-          expect(request.session.user).toEqual(user)
-          expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', '/')
-          expect(data).toEqual({ user: user })
-          done()
-        }
-      }
+          expect(request.session.user).toEqual(user);
+          expect(response.status).toHaveBeenCalledWith(302);
+          expect(response.set).toHaveBeenCalledWith('Location', '/');
+          expect(data).toEqual({ user: object });
+          done();
+        },
+      };
 
-      route.login(request, response)
-    })
+      route.login(request, response);
+    });
 
-    it ('returns user is not exist when login fail', done => {
+    it('returns user is not exist when login fail', done => {
       let request = {
         session: {},
-        body: { email: 'nouser@email.com', password: 'password' }
-      }, response = {
+        body: { email: 'nouser@email.com', password: 'password' },
+      };
+      let response = {
         status: jasmine.createSpy('status'),
         set: jasmine.createSpy('set'),
         json(data) {
-          expect(request.session.user).not.toBeDefined()
-          expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', `/#/login?error=${Fail.ERROR_NO_USER_FOUND}`)
+          expect(request.session.user).not.toBeDefined();
+          expect(response.status).toHaveBeenCalledWith(302);
+          expect(response.set).toHaveBeenCalledWith(
+            'Location',
+            `/#/login?error=${Fail.ERROR_NO_USER_FOUND}`);
           expect(data).toEqual({
-            error: new Fail(Fail.ERROR_NO_USER_FOUND)
-          })
-          done()
-        }
-      }
+            error: new Fail(Fail.ERROR_NO_USER_FOUND),
+          });
+          done();
+        },
+      };
 
-      route.login(request, response)
-    })
+      route.login(request, response);
+    });
 
-    it ('returns invalid password when login fail', done => {
+    it('returns invalid password when login fail', done => {
       let request = {
         session: {},
-        body: { email: 'user@email.com', password: 'invalidpassword' }
-      }, response = {
+        body: { email: 'user@email.com', password: 'invalidpassword' },
+      };
+      let response = {
         status: jasmine.createSpy('status'),
         set: jasmine.createSpy('set'),
         json(data) {
-          expect(request.session.user).not.toBeDefined()
-          expect(response.status).toHaveBeenCalledWith(302)
-          expect(response.set).toHaveBeenCalledWith('Location', `/#/login?error=${Fail.ERROR_INVALID_PASSWORD}`)
+          expect(request.session.user).not.toBeDefined();
+          expect(response.status).toHaveBeenCalledWith(302);
+          expect(response.set).toHaveBeenCalledWith(
+            'Location',
+            `/#/login?error=${Fail.ERROR_INVALID_PASSWORD}`);
           expect(data).toEqual({
-            error: new Fail(Fail.ERROR_INVALID_PASSWORD)
-          })
-          done()
-        }
-      }
+            error: new Fail(Fail.ERROR_INVALID_PASSWORD),
+          });
+          done();
+        },
+      };
 
-      route.login(request, response)
-    })
-
-  })
+      route.login(request, response);
+    });
+  });
 
   describe('#logout', () => {
-
-    it ('destroys session', (done) => {
-
+    it('destroys session', (done) => {
       let request = {
-        session: { destroy: jasmine.createSpy('destroy') }
-      }
+        session: { destroy: jasmine.createSpy('destroy') },
+      };
       let response = {
         redirect(code, path) {
-          expect(code).toEqual(302)
-          expect(path).toEqual('/')
-          expect(request.session.destroy).toHaveBeenCalled()
-          done()
-        }
-      }
+          expect(code).toEqual(302);
+          expect(path).toEqual('/');
+          expect(request.session.destroy).toHaveBeenCalled();
+          done();
+        },
+      };
 
-      route.logout(request, response)
-    })
-
-  })
+      route.logout(request, response);
+    });
+  });
 
   describe('#me', () => {
-
-    it ('returns user if session is exists', done => {
+    it('returns user if session is exists', done => {
       let request = {
         session: {
-          user: { id: 1, email: 'email' }
-        }
-      },
-      response = {
-        json(data) {
-          expect(data).toEqual({ user: request.session.user })
-          done()
-        }
-      }
-
-      route.me(request, response)
-    })
-
-    it ('returns not found if user session is not exist', done => {
-      let request = { session: {} }
-        , response = {
-          status: jasmine.createSpy('status'),
-          json(data) {
-            expect(response.status).toHaveBeenCalledWith(404)
-            expect(data).toEqual({
-              error: new Fail(Fail.ERROR_NO_USER_FOUND)
-            })
-            done()
-          }
-        }
-
-      route.me(request, response)
-    })
-
-  })
-
-  xdescribe('#update', () => {
-
-    it (`returns new user information after update`, done => {
-      let request = {
-        session: { user: user },
-        body: {
-          password: 'newpassword'
-        }
-      }
+          user: { id: 1, email: 'email' },
+        },
+      };
       let response = {
         json(data) {
-          expect(data).toEqual({ user: user })
-          done()
-        }
-      }
-      route.update(request, response)
-    })
+          expect(data).toEqual({ user: request.session.user });
+          done();
+        },
+      };
 
-    it (`doesn't allow update if user is not logged in`, done => {
+      route.me(request, response);
+    });
+
+    it('returns not found if user session is not exist', done => {
+      let request = { session: {} };
+      let response = {
+        status: jasmine.createSpy('status'),
+        json(data) {
+          expect(response.status).toHaveBeenCalledWith(404);
+          expect(data).toEqual({
+            error: new Fail(Fail.ERROR_NO_USER_FOUND),
+          });
+          done();
+        },
+      };
+
+      route.me(request, response);
+    });
+  });
+
+  xdescribe('#update', () => {
+    it(`returns new user information after update`, done => {
+      let request = {
+        session: { user },
+        body: {
+          password: 'newpassword',
+        },
+      };
+      let response = {
+        json(data) {
+          expect(data).toEqual({ user });
+          done();
+        },
+      };
+      route.update(request, response);
+    });
+
+    it(`doesn't allow update if user is not logged in`, done => {
       let request = {
         session: {},
         body: {
-          password: 'newpassword'
-        }
-      }
+          password: 'newpassword',
+        },
+      };
       let response = {
         json(data) {
-          expect(response.status).toHaveBeenCalledWith(403)
+          expect(response.status).toHaveBeenCalledWith(403);
           expect(data).toEqual({
-            error: new Fail(Fail.ERROR_FORBIDDEN)
-          })
-          done()
-        }
-      }
+            error: new Fail(Fail.ERROR_FORBIDDEN),
+          });
+          done();
+        },
+      };
 
-      route.update(request, response)
-    })
-
-  })
-
-})
+      route.update(request, response);
+    });
+  });
+});

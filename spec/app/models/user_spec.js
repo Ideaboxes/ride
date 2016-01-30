@@ -1,110 +1,98 @@
-'use strict'
+'use strict';
 
-let bcrypt = require('bcrypt')
+let bcrypt = require('bcrypt');
 
-let User = require('../../../app/models/user')
-  , Fail = require('../../../app/fail')
+let User = require('../../../app/models/user');
+let Fail = require('../../../app/fail');
 
-describe('User', function() {
-
-  let user = null
+describe('User', () => {
+  let user = null;
 
   beforeAll((done) => {
     User.create({
       email: 'user@email.com',
-      password: bcrypt.hashSync('password', bcrypt.genSaltSync())
+      password: bcrypt.hashSync('password', bcrypt.genSaltSync()),
     }).then((record) => {
-      user = record
-      done()
-    })
-  })
+      user = record;
+      done();
+    });
+  });
 
   afterAll((done) => {
-    User.truncate().then(done)
-  })
+    User.truncate().then(done);
+  });
 
   describe('#json', () => {
-
-    it ('returns only id and email', () => {
+    it('returns only id and email', () => {
       expect(user.json()).toEqual({
         id: jasmine.any(Number),
-        email: 'user@email.com'
-      })
-    })
-
-  })
+        email: 'user@email.com',
+      });
+    });
+  });
 
   describe('#authenticate', () => {
-
-    it ('resolves when authenticate success', (done) => {
+    it('resolves when authenticate success', (done) => {
       User.authenticate('user@email.com', 'password')
-        .then(user => {
-          expect(user).toBeDefined()
-          done()
+        .then(result => {
+          expect(result).toBeDefined();
+          done();
         })
-        .catch(done.fail)
-    })
+        .catch(done.fail);
+    });
 
-    it ('rejects when authenticate fail', (done) => {
+    it('rejects when authenticate fail', (done) => {
       User.authenticate('user@email.com', 'notpassword')
         .then(done.fail)
-        .catch(done)
-    })
+        .catch(done);
+    });
 
-    it ('rejects when user is not found', (done) => {
+    it('rejects when user is not found', (done) => {
       User.authenticate('notfound@email.com', 'password')
         .then(done.fail)
-        .catch(done)
-    })
-
-  })
+        .catch(done);
+    });
+  });
 
   describe('#register', () => {
-
     describe('create success', () => {
-
-      let user = null
-
       beforeAll(done => {
         User.register({
           email: 'newuser@email.com',
-          password: 'password'
+          password: 'password',
         }).then(record => {
-          user = record
-          done()
-        })
-      })
+          user = record;
+          done();
+        });
+      });
 
-      it ('increase user count', done => {
+      it('increase user count', done => {
         User.count().then(total => {
-          expect(total).toEqual(2)
-          done()
-        })
-      })
+          expect(total).toEqual(2);
+          done();
+        });
+      });
 
-      it ('hash password', () => {
-        expect(user.password).not.toEqual('password')
-      })
+      it('hash password', () => {
+        expect(user.password).not.toEqual('password');
+      });
 
-      it ('set confirmHash', () => {
-        expect(user.confirmHash).toBeDefined()
-        expect(user.confirmHash.length).toBeGreaterThan(0)
-      })
+      it('set confirmHash', () => {
+        expect(user.confirmHash).toBeDefined();
+        expect(user.confirmHash.length).toBeGreaterThan(0);
+      });
+    });
 
-    })
-
-    it ('rejects when email is already exists', (done) => {
+    it('rejects when email is already exists', (done) => {
       User.register({
         email: 'user@email.com',
-        password: 'password'
+        password: 'password',
       })
       .then(done.fail)
       .catch(error => {
-        expect(error).toEqual(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST))
-        done()
-      })
-    })
-
-  })
-
-})
+        expect(error).toEqual(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST));
+        done();
+      });
+    });
+  });
+});

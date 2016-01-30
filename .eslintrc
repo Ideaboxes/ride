@@ -1,0 +1,28 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "es6": true
+  },
+  "rules": {
+    "prefer-const": 0,
+    "no-param-reassign": 0,
+    "func-names": 0,
+    "strict": 0
+  },
+  "globals": {
+    "google": false,
+    "describe": false,
+    "beforeEach": false,
+    "afterEach": false,
+    "jasmine": false,
+    "it": false,
+    "expect": false,
+    "spyOn": false,
+    "beforeAll": false,
+    "afterAll": false,
+    "fit": false,
+    "xit": false,
+    "fdescribe": false,
+    "xdescribe": false
+  }
+}

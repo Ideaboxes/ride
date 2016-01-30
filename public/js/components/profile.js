@@ -1,40 +1,54 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 class Profile extends Component {
 
   constructor(props) {
-    super(props)
+    super(props);
+  }
+
+  linkFitbitAccount() {
+
   }
 
   render() {
-    return (<form className='profile' method='post' action='/v1/users/update.json'>
+    return (<form className="profile" method="post" action="/v1/users/update.json">
 
-      <div className='row'>
-        <div className='small-offset-4 small-4 columns'>
+      <div className="row">
+        <div className="small-offset-4 small-4 columns">
           <label>
             Email
-            <input name='email' form='registerForm' type='email' placeholder='Email' required></input>
+            <input name="email"
+              form="registerForm"
+              type="email"
+              placeholder="Email"
+              required
+            ></input>
           </label>
 
           <label>
             Password
-            <input name='password' form='registerForm' type='password' placeholder='Password' required></input>
+            <input name="password"
+              form="registerForm"
+              type="password"
+              placeholder="Password"
+              required
+            ></input>
           </label>
 
           <hr/>
 
           <ul>
-            <li>Link Fitbit account</li>
+            <li><a onClick={this.linkFitbitAccount}>Link Fitbit account</a></li>
             <li>Link Strava account</li>
           </ul>
 
-          <button type='submit'>Update</button>
+          <button type="submit">Update</button>
         </div>
       </div>
 
-    </form>)
+    </form>);
   }
 
 }
 
-export default Profile
+export default Profile;

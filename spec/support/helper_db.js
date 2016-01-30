@@ -1,23 +1,24 @@
-'use strict'
+'use strict';
 
-let fs = require('fs')
-  , databaseUrl = `test.db`
+let fs = require('fs');
+let databaseUrl = `test.db`;
 
-process.env['ENVIRONMENT'] = 'test'
-process.env['DATABASE_URL'] = `sqlite://${databaseUrl}`
+process.env.ENVIRONMENT = 'test';
+process.env.DATABASE_URL = `sqlite://${databaseUrl}`;
 
 // Delete specs database url before
 try {
-  fs.unlinkSync(`${__dirname}/../../${databaseUrl}`)
+  fs.unlinkSync(`${__dirname}/../../${databaseUrl}`);
 } catch (e) {
+  // Don't do anything
 }
 
-let db = require('../../app/models/db')
-  , user = require('../../app/models/user')
-  , created = false
+let db = require('../../app/models/db');
+require('../../app/models/user');
+let created = false;
 
-db.sync({ force: true }).then(function() { created = true })
+db.sync({ force: true }).then(() => { created = true; });
 
 while (!created) {
-  require('deasync').sleep(1000)
+  require('deasync').sleep(1000);
 }
