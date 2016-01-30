@@ -98,7 +98,7 @@ describe('User Route', () => {
             email: 'user@email.com',
           };
 
-          expect(request.session.user).toEqual(user);
+          expect(request.session.user).toEqual(user.json());
           expect(response.status).toHaveBeenCalledWith(302);
           expect(response.set).toHaveBeenCalledWith('Location', '/');
           expect(data).toEqual({ user: object });
