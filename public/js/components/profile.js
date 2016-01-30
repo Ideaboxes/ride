@@ -7,7 +7,7 @@ class Profile extends Component {
   }
 
   linkFitbitAccount() {
-
+    open('/v1/fitbit/link.json', '_blank');
   }
 
   render() {
