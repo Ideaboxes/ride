@@ -6,8 +6,9 @@ let bcrypt = require('bcrypt');
 let crypto = require('crypto');
 
 let Fail = require('../fail');
+let Service = require('./service');
 
-let User = db.define('User', {
+let User = db.define('user', {
   email: Sequelize.STRING,
   password: Sequelize.STRING,
   confirmHash: Sequelize.STRING,
@@ -73,5 +74,7 @@ let User = db.define('User', {
     },
   },
 });
+
+User.hasMany(Service, { as: 'Services' });
 
 module.exports = User;

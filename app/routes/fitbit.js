@@ -1,6 +1,10 @@
 'use strict';
 
 let oauth = require('oauth');
+let buffer = require('buffer');
+let qs = require('querystring');
+
+let Buffer = buffer.Buffer;
 
 // let User = require('../models/user');
 // let Fail = require('../fail');
@@ -38,7 +42,29 @@ class FitbitRoute {
   }
 
   callback(request, response) {
-    response.json({ ok: true });
+    let authorization = `${process.env.FITBIT_ID}:${process.env.FITBIT_SECRET}`;
+    let header = {
+      Authorization: `Basic ${new Buffer(authorization).toString('base64')}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    };
+    let params = {
+      code: request.query.code,
+      grant_type: 'authorization_code',
+      client_id: process.env.FITBIT_ID,
+      redirect_uri: `${process.env.BASE_URL}/v1/fitbit/callback.json`,
+    };
+
+    let postData = qs.stringify(params);
+    let service = this.service;
+    service._request('POST', service._getAccessTokenUrl(), header, postData, null,
+      (error, data) => {
+        if (error) {
+          return response.json(error);
+        }
+
+        console.log(JSON.parse(data));
+        response.json({ ok: true });
+      });
   }
 
 }
