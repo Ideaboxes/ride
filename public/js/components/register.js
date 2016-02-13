@@ -14,7 +14,6 @@ class Register extends Component {
           <label>
             Email
             <input name="email"
-              form="registerForm"
               type="email"
               placeholder="Email"
               required
@@ -24,7 +23,6 @@ class Register extends Component {
           <label>
             Password
             <input name="password"
-              form="registerForm"
               type="password"
               placeholder="Password"
               required

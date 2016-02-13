@@ -7,7 +7,8 @@
     "prefer-const": 0,
     "no-param-reassign": 0,
     "func-names": 0,
-    "strict": 0
+    "strict": 0,
+    "no-labels": 0
   },
   "globals": {
     "google": false,

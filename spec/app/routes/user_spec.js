@@ -1,7 +1,5 @@
 'use strict';
 
-let bcrypt = require('bcrypt');
-
 let UserRoute = require('../../../app/routes/user');
 let User = require('../../../app/models/user');
 let Fail = require('../../../app/fail');
@@ -13,18 +11,13 @@ describe('User Route', () => {
   beforeAll(done => {
     route = UserRoute.create();
 
-    User.create({
-      email: 'user@email.com',
-      password: bcrypt.hashSync('password', bcrypt.genSaltSync()),
-    }).then(object => {
+    global.createUser('user@email.com', 'password').then(object => {
       user = object;
       done();
     });
   });
 
-  afterAll(done => {
-    User.truncate().then(done);
-  });
+  afterAll((done) => global.cleanAllData().then(done));
 
   describe('#paths', () => {
     it('returns all path with functions to handle the request', () => {
@@ -211,7 +204,7 @@ describe('User Route', () => {
   });
 
   xdescribe('#update', () => {
-    it(`returns new user information after update`, done => {
+    it('returns new user information after update', done => {
       let request = {
         session: { user },
         body: {
@@ -227,7 +220,7 @@ describe('User Route', () => {
       route.update(request, response);
     });
 
-    it(`doesn't allow update if user is not logged in`, done => {
+    it('does not allow update if user is not logged in', done => {
       let request = {
         session: {},
         body: {

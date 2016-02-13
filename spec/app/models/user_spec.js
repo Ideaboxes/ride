@@ -1,7 +1,5 @@
 'use strict';
 
-let bcrypt = require('bcrypt');
-
 let User = require('../../../app/models/user');
 let Fail = require('../../../app/fail');
 
@@ -9,18 +7,14 @@ describe('User', () => {
   let user = null;
 
   beforeAll((done) => {
-    User.create({
-      email: 'user@email.com',
-      password: bcrypt.hashSync('password', bcrypt.genSaltSync()),
-    }).then((record) => {
-      user = record;
-      done();
-    });
+    global.createUser('user@email.com', 'password')
+      .then(record => {
+        user = record;
+        done();
+      });
   });
 
-  afterAll((done) => {
-    User.truncate().then(done);
-  });
+  afterAll((done) => global.cleanAllData().then(done));
 
   describe('#json', () => {
     it('returns only id and email', () => {
@@ -93,6 +87,45 @@ describe('User', () => {
         expect(error).toEqual(new Fail(Fail.ERROR_EMAIL_ALREADY_EXIST));
         done();
       });
+    });
+  });
+
+  describe('#linkService', () => {
+    let service = null;
+
+    beforeAll(done => {
+      user.linkService('service_name', 'access_token', 'refresh_token')
+        .then(record => {
+          service = record;
+          done();
+        });
+    });
+
+    it('returns service', () => {
+      expect(service).toEqual(jasmine.objectContaining({
+        name: 'service_name',
+        accessToken: 'access_token',
+        refreshToken: 'refresh_token',
+      }));
+    });
+
+    it('returns error when link service with same name', done => {
+      user.linkService('service_name', 'access_token', 'refresh_token')
+        .then(() => {
+          done.fail('user create duplicated service');
+        })
+        .catch(() => {
+          done();
+        });
+    });
+
+    it('includes new service in user object', done => {
+      user.getServices()
+        .then(services => {
+          expect(services.length).toEqual(1);
+          expect(services[0].id).toEqual(service.id);
+          done();
+        });
     });
   });
 });

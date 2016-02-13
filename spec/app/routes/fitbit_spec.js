@@ -7,18 +7,23 @@ let FitbitRoute = require('../../../app/routes/fitbit');
 describe('Fitbit Route', () => {
   let route = null;
 
-  beforeAll(() => {
+  beforeAll(done => {
     process.env.FITBIT_ID = 'fitbit_id';
     process.env.BASE_URL = 'http://localhost:3000';
 
     route = FitbitRoute.create();
+    global.createUser('user@email.com', 'password').then(done);
   });
+
+  afterAll((done) => global.cleanAllData().then(done));
 
   describe('#link', () => {
     let result = null;
 
     beforeEach(done => {
-      let request = {};
+      let request = {
+        session: { user: {} },
+      };
       let response = {
         redirect(code, redirectUrl) {
           let parsedUrl = url.parse(redirectUrl, true);

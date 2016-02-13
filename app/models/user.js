@@ -23,7 +23,7 @@ let User = db.define('user', {
         return new Promise((resolve, reject) => {
           bcrypt.compare(password, user.password, (error, result) => {
             if (result) return resolve(user);
-            reject(new Fail(Fail.ERROR_INVALID_PASSWORD));
+            return reject(new Fail(Fail.ERROR_INVALID_PASSWORD));
           });
         });
       });
@@ -42,14 +42,14 @@ let User = db.define('user', {
         return new Promise((resolve, reject) => {
           bcrypt.genSalt(10, (err, salt) => {
             if (err) return reject(err);
-            resolve(salt);
+            return resolve(salt);
           });
         });
       }).then(salt => (
         new Promise((resolve, reject) => {
           bcrypt.hash(hash.password, salt, (err, password) => {
             if (err) return reject(err);
-            resolve(password);
+            return resolve(password);
           });
         })
       )).then(password => {
@@ -66,6 +66,17 @@ let User = db.define('user', {
     },
   },
   instanceMethods: {
+    linkService(name, accessToken, refreshToken) {
+      let userId = this.id;
+
+      return Service.create({
+        name,
+        accessToken,
+        refreshToken,
+        userId,
+      });
+    },
+
     json() {
       return {
         id: this.id,

@@ -8,7 +8,12 @@ let Service = db.define('service', {
   accessToken: Sequelize.STRING,
   refreshToken: Sequelize.STRING,
 }, {
-  classMethods: {},
+  indexes: [
+    {
+      unique: true,
+      fields: ['name', 'userId'],
+    },
+  ],
   instanceMethods: {
     json() {
       return {

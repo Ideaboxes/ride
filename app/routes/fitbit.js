@@ -4,10 +4,10 @@ let oauth = require('oauth');
 let buffer = require('buffer');
 let qs = require('querystring');
 
-let Buffer = buffer.Buffer;
+let Fail = require('../fail');
+let User = require('../models/user');
 
-// let User = require('../models/user');
-// let Fail = require('../fail');
+let Buffer = buffer.Buffer;
 
 class FitbitRoute {
 
@@ -32,6 +32,12 @@ class FitbitRoute {
   }
 
   link(request, response) {
+    if (!request.session.user) {
+      response.status(403);
+      response.json({ error: new Fail(Fail.ERROR_FORBIDDEN) });
+      return;
+    }
+
     let url = this.service.getAuthorizeUrl({
       response_type: 'code',
       scope: ['activity', 'heartrate', 'location', 'profile'].join(' '),
@@ -42,13 +48,40 @@ class FitbitRoute {
   }
 
   callback(request, response) {
+    if (!request.session.user) {
+      response.status(403);
+      response.json({ error: new Fail(Fail.ERROR_FORBIDDEN) });
+      return null;
+    }
+
+    return Promise.all([
+      this.getAccessToken(request.query.code),
+      User.findById(request.session.user.id),
+    ])
+    .then(result => {
+      let authorizedToken = result[0];
+      let user = result[1];
+
+      return user.linkService('fitbit',
+        authorizedToken.access_token,
+        authorizedToken.refresh_token);
+    })
+    .then(fitbit => {
+      response.json(fitbit.json());
+    })
+    .catch(error => {
+      response.json(error);
+    });
+  }
+
+  getAccessToken(code) {
     let authorization = `${process.env.FITBIT_ID}:${process.env.FITBIT_SECRET}`;
     let header = {
       Authorization: `Basic ${new Buffer(authorization).toString('base64')}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     };
     let params = {
-      code: request.query.code,
+      code,
       grant_type: 'authorization_code',
       client_id: process.env.FITBIT_ID,
       redirect_uri: `${process.env.BASE_URL}/v1/fitbit/callback.json`,
@@ -56,15 +89,13 @@ class FitbitRoute {
 
     let postData = qs.stringify(params);
     let service = this.service;
-    service._request('POST', service._getAccessTokenUrl(), header, postData, null,
-      (error, data) => {
-        if (error) {
-          return response.json(error);
-        }
-
-        console.log(JSON.parse(data));
-        response.json({ ok: true });
-      });
+    return new Promise((resolve, reject) => {
+      service._request('POST', service._getAccessTokenUrl(), header, postData, null,
+        (error, data) => {
+          if (error) { return reject(error); }
+          return resolve(JSON.parse(data));
+        });
+    });
   }
 
 }
