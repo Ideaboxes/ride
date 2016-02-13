@@ -53,10 +53,25 @@ class UserRoute {
   }
 
   me(request, response) {
-    if (request.session.user) return response.json({ user: request.session.user });
+    if (!request.session.user) {
+      response.status(404);
+      response.json({ error: new Fail(Fail.ERROR_NO_USER_FOUND) });
+      return;
+    }
 
-    response.status(404);
-    response.json({ error: new Fail(Fail.ERROR_NO_USER_FOUND) });
+    let user = null;
+    User.findById(request.session.user.id)
+    .then(record => {
+      user = record;
+      return user.getServices();
+    })
+    .then(services => {
+      let json = user.json();
+      json.services = services.map(item => item.json());
+      response.json({ user: json });
+    })
+    .catch(error =>
+      response.json({ error: new Fail(Fail.ERROR_DATABASE, error) }));
   }
 
 }
