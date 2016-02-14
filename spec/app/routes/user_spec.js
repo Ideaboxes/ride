@@ -11,7 +11,7 @@ describe('User Route', () => {
   beforeAll(done => {
     route = UserRoute.create();
 
-    global.createUser('user@email.com', 'password').then(object => {
+    global.createUserWithService('user@email.com', 'password').then(object => {
       user = object;
       done();
     });
@@ -171,14 +171,17 @@ describe('User Route', () => {
 
   describe('#me', () => {
     it('returns user if session is exists', done => {
+      let output = user.json();
+      output.services = [{ name: 'service_name' }];
+
       let request = {
         session: {
-          user: { id: 1, email: 'email' },
+          user: user.json(),
         },
       };
       let response = {
         json(data) {
-          expect(data).toEqual({ user: request.session.user });
+          expect(data).toEqual({ user: output });
           done();
         },
       };
@@ -200,44 +203,6 @@ describe('User Route', () => {
       };
 
       route.me(request, response);
-    });
-  });
-
-  xdescribe('#update', () => {
-    it('returns new user information after update', done => {
-      let request = {
-        session: { user },
-        body: {
-          password: 'newpassword',
-        },
-      };
-      let response = {
-        json(data) {
-          expect(data).toEqual({ user });
-          done();
-        },
-      };
-      route.update(request, response);
-    });
-
-    it('does not allow update if user is not logged in', done => {
-      let request = {
-        session: {},
-        body: {
-          password: 'newpassword',
-        },
-      };
-      let response = {
-        json(data) {
-          expect(response.status).toHaveBeenCalledWith(403);
-          expect(data).toEqual({
-            error: new Fail(Fail.ERROR_FORBIDDEN),
-          });
-          done();
-        },
-      };
-
-      route.update(request, response);
     });
   });
 });

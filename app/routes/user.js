@@ -61,17 +61,17 @@ class UserRoute {
 
     let user = null;
     User.findById(request.session.user.id)
-    .then(record => {
-      user = record;
-      return user.getServices();
-    })
-    .then(services => {
-      let json = user.json();
-      json.services = services.map(item => item.json());
-      response.json({ user: json });
-    })
-    .catch(error =>
-      response.json({ error: new Fail(Fail.ERROR_DATABASE, error) }));
+      .then(record => {
+        user = record;
+        return user.getServices();
+      })
+      .then(services => {
+        let json = user.json();
+        json.services = services.map(item => item.json());
+        response.json({ user: json });
+      })
+      .catch(error =>
+        response.json({ error: new Fail(Fail.ERROR_DATABASE, error) }));
   }
 
 }

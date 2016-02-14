@@ -54,11 +54,4 @@ describe('Fitbit Route', () => {
       }));
     });
   });
-
-  // describe('#callback', () => {
-  //   beforeEach(() => {
-  //     let request = {};
-  //     let response = {};
-  //   });
-  // });
 });
