@@ -8,10 +8,6 @@ function select(state) {
 }
 
 class Application extends Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     // Injected by connect() call:
     const { children, user } = this.props;
@@ -26,7 +22,7 @@ class Application extends Component {
 }
 
 Application.propTypes = {
-  children: React.PropTypes.array,
+  children: React.PropTypes.object,
   user: React.PropTypes.object,
 };
 

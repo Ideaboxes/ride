@@ -1,16 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 
 class Profile extends Component {
-
-  constructor(props) {
-    super(props);
-  }
-
   linkFitbitAccount() {
     open('/v1/fitbit/link.json', '_blank');
   }
 
+  unlinkFitbitAccount() {
+    console.log('unlink account');
+  }
+
   render() {
+    let userServices = this.props.user.services.map(item => item.name);
+    let fitbitLink = userServices.includes('fitbit') ?
+      <a onClick={this.unlinkFitbitAccount}>Unlink Fitbit account</a> :
+      <a onClick={this.linkFitbitAccount}>Link Fitbit account</a>;
+
     return (<form className="profile" method="post" action="/v1/users/update.json">
 
       <div className="row">
@@ -35,10 +40,10 @@ class Profile extends Component {
             ></input>
           </label>
 
-          <hr/>
+          <hr />
 
           <ul>
-            <li><a onClick={this.linkFitbitAccount}>Link Fitbit account</a></li>
+            <li>{fitbitLink}</li>
             <li>Link Strava account</li>
           </ul>
 
@@ -48,7 +53,12 @@ class Profile extends Component {
 
     </form>);
   }
-
 }
 
-export default Profile;
+Profile.propTypes = {
+  user: React.PropTypes.object,
+};
+
+export default connect(
+  state => ({ user: state.user })
+  )(Profile);

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { Router, Route, IndexRoute } from 'react-router';
+import { Router, Route, IndexRoute, hashHistory } from 'react-router';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 
@@ -30,7 +30,7 @@ fetch('/v1/users/me.json', { credentials: 'include' })
         <Route path="login" component={Login} />
         <Route path="register" component={Register} />
 
-        <Route path="*" component={NoMatch}/>
+        <Route path="*" component={NoMatch} />
       </Route>);
 
 
@@ -40,13 +40,13 @@ fetch('/v1/users/me.json', { credentials: 'include' })
           <IndexRoute component={Map} />
           <Route path="profile" component={Profile} />
 
-          <Route path="*" component={NoMatch}/>
+          <Route path="*" component={NoMatch} />
         </Route>);
     }
 
     render((
       <Provider store={store}>
-        <Router>
+        <Router history={hashHistory}>
           {routes}
         </Router>
       </Provider>
