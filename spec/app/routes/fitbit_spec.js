@@ -1,6 +1,10 @@
 'use strict';
 
 let url = require('url');
+let buffer = require('buffer');
+let qs = require('querystring');
+
+let Buffer = buffer.Buffer;
 
 let FitbitRoute = require('../../../app/routes/fitbit');
 
@@ -52,6 +56,54 @@ describe('Fitbit Route', () => {
         redirect_uri: 'http://localhost:3000/v1/fitbit/callback.json',
         state: jasmine.any(String),
       }));
+    });
+  });
+
+  describe('#callback', () => {
+    beforeEach(() => {
+      spyOn(route, 'getAccessToken').and.returnValue(Promise.resolve({
+        access_token: 'access_token',
+        refresh_token: 'refresh_token',
+      }));
+    });
+  });
+
+  describe('#getAccessToken', () => {
+    beforeEach(done => {
+      spyOn(route.service, '_request').and.callFake(
+        (method, accessTokenUrl, header, post, something, cb) => {
+          cb(null, JSON.stringify({
+            access_token: 'access_token',
+            refresh_token: 'refresh_token',
+          }));
+        });
+
+      route.getAccessToken('callback_code').then(done);
+    });
+
+    it('requests accessToken with fitbit header', () => {
+      let authorization = `${process.env.FITBIT_ID}:${process.env.FITBIT_SECRET}`;
+      let header = {
+        Authorization: `Basic ${new Buffer(authorization).toString('base64')}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+
+      let params = {
+        code: 'callback_code',
+        grant_type: 'authorization_code',
+        client_id: process.env.FITBIT_ID,
+        redirect_uri: `${process.env.BASE_URL}/v1/fitbit/callback.json`,
+      };
+
+      let postData = qs.stringify(params);
+
+      expect(route.service._request).toHaveBeenCalledWith(
+        'POST',
+        route.service._getAccessTokenUrl(),
+        header,
+        postData,
+        null,
+        jasmine.any(Function));
     });
   });
 });
