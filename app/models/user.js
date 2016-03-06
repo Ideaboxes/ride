@@ -77,6 +77,14 @@ let User = db.define('user', {
       });
     },
 
+    unlinkService(name) {
+      return this.getServices({ name })
+        .then(services => {
+          if (services.length === 0) throw new Fail(Fail.ERROR_NO_SERVICE_FOUND);
+          return services[0].destroy();
+        });
+    },
+
     json() {
       return {
         id: this.id,
