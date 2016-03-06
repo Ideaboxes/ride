@@ -1,20 +1,22 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { unlinkService } from '../actions';
+
 class Profile extends Component {
   linkFitbitAccount() {
     open('/v1/fitbit/link.json', '_blank');
   }
 
   unlinkFitbitAccount() {
-    console.log('unlink account');
+    this.props.onUnlinkService('fitbit');
   }
 
   render() {
     let userServices = this.props.user.services.map(item => item.name);
     let fitbitLink = userServices.includes('fitbit') ?
-      <a onClick={this.unlinkFitbitAccount}>Unlink Fitbit account</a> :
-      <a onClick={this.linkFitbitAccount}>Link Fitbit account</a>;
+      <a onClick={this.unlinkFitbitAccount.bind(this)}>Unlink Fitbit account</a> :
+      <a onClick={this.linkFitbitAccount.bind(this)}>Link Fitbit account</a>;
 
     return (<form className="profile" method="post" action="/v1/users/update.json">
 
@@ -56,8 +58,14 @@ class Profile extends Component {
 
 Profile.propTypes = {
   user: React.PropTypes.object,
+  onUnlinkService: React.PropTypes.func,
 };
 
 export default connect(
-  state => ({ user: state.user })
+  state => ({ user: state.user }),
+  (dispatch) => ({
+    onUnlinkService: serviceName => {
+      dispatch(unlinkService(serviceName));
+    },
+  })
   )(Profile);
