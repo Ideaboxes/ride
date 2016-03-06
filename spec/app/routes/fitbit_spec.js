@@ -95,6 +95,24 @@ describe('Fitbit Route', () => {
         refresh_token: 'refresh_token',
       }));
     });
+
+    it('redirects to profile when success', done => {
+      let request = {
+        query: { code: 'callback_code' },
+        session: {
+          user: user.json(),
+        },
+      };
+      let response = {
+        redirect(status, redirectUrl) {
+          expect(status).toEqual(302);
+          expect(redirectUrl).toEqual('/#/profile');
+          done();
+        },
+      };
+
+      route.callback(request, response);
+    });
   });
 
   describe('#getAccessToken', () => {
