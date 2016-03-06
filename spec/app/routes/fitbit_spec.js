@@ -7,7 +7,6 @@ let qs = require('querystring');
 let Buffer = buffer.Buffer;
 
 let FitbitRoute = require('../../../app/routes/fitbit');
-let Fail = require('../../../app/fail');
 
 describe('Fitbit Route', () => {
   let route = null;
@@ -18,7 +17,7 @@ describe('Fitbit Route', () => {
     process.env.BASE_URL = 'http://localhost:3000';
 
     route = FitbitRoute.create();
-    global.createUserWithService('user@email.com', 'password')
+    global.createUserWithServiceName('user@email.com', 'password', 'fitbit')
       .then(record => {
         user = record;
         done();
@@ -68,49 +67,23 @@ describe('Fitbit Route', () => {
   describe('#unlink', () => {
     let result = null;
 
-    describe('with service name', () => {
-      beforeEach(done => {
-        let request = {
-          session: { user: user.json() },
-          query: { service: 'service_name' },
-        };
-        let response = {
-          json(data) {
-            result = data;
-            done();
-          },
-        };
+    beforeEach(done => {
+      let request = {
+        session: { user: user.json() },
+      };
+      let response = {
+        json(data) {
+          result = data;
+          done();
+        },
+      };
 
-        route.unlink(request, response);
-      });
-
-      it('returns service object after unlink success', () => {
-        expect(result).toEqual({
-          service: { name: 'service_name' },
-        });
-      });
+      route.unlink(request, response);
     });
 
-    describe('without service name', () => {
-      beforeEach(done => {
-        let request = {
-          session: { user: user.json() },
-          query: {},
-        };
-        let response = {
-          json(data) {
-            result = data;
-            done();
-          },
-        };
-
-        route.unlink(request, response);
-      });
-
-      it('returns error object after unlink without service name', () => {
-        expect(result).toEqual({
-          error: new Fail(Fail.ERROR_BAD_REQUEST),
-        });
+    it('returns service object after unlink success', () => {
+      expect(result).toEqual({
+        service: { name: 'fitbit' },
       });
     });
   });
