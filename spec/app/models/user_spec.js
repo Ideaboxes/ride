@@ -7,7 +7,7 @@ describe('User', () => {
   let user = null;
 
   beforeAll((done) => {
-    global.createUser('user@email.com', 'password')
+    global.createUserWithService('user@email.com', 'password')
       .then(record => {
         user = record;
         done();
@@ -49,13 +49,15 @@ describe('User', () => {
   });
 
   describe('#register', () => {
+    let newUser = null;
+
     describe('create success', () => {
       beforeAll(done => {
         User.register({
           email: 'newuser@email.com',
           password: 'password',
         }).then(record => {
-          user = record;
+          newUser = record;
           done();
         });
       });
@@ -68,12 +70,12 @@ describe('User', () => {
       });
 
       it('hash password', () => {
-        expect(user.password).not.toEqual('password');
+        expect(newUser.password).not.toEqual('password');
       });
 
       it('set confirmHash', () => {
-        expect(user.confirmHash).toBeDefined();
-        expect(user.confirmHash.length).toBeGreaterThan(0);
+        expect(newUser.confirmHash).toBeDefined();
+        expect(newUser.confirmHash.length).toBeGreaterThan(0);
       });
     });
 
@@ -92,9 +94,58 @@ describe('User', () => {
 
   describe('#linkService', () => {
     let service = null;
+    let newUser = null;
 
     beforeAll(done => {
-      user.linkService('service_name', 'access_token', 'refresh_token')
+      global.createUserWithService('newuser2@email.com', 'password')
+        .then(record => {
+          newUser = record;
+          return newUser.linkService('sample_service', 'sample_token', 'sample_refresh_token');
+        })
+        .then(record => {
+          service = record;
+          done();
+        });
+    });
+
+    it('returns service', () => {
+      expect(service).toEqual(jasmine.objectContaining({
+        name: 'sample_service',
+        accessToken: 'sample_token',
+        refreshToken: 'sample_refresh_token',
+      }));
+    });
+
+    it('returns error when link service with same name', done => {
+      newUser.linkService('sample_service', 'sample_token', 'sample_refresh_token')
+        .then(() => {
+          done.fail('user create duplicated service');
+        })
+        .catch(() => {
+          done();
+        });
+    });
+
+    it('includes new service in user object', done => {
+      newUser.getServices()
+        .then(services => {
+          expect(services.length).toEqual(2);
+          expect(services[1].id).toEqual(service.id);
+          done();
+        });
+    });
+  });
+
+  describe('#unlinkService', () => {
+    let service = null;
+    let newUser = null;
+
+    beforeAll(done => {
+      global.createUserWithService('newuser3@email.com', 'password')
+        .then(record => {
+          newUser = record;
+          return newUser.unlinkService('service_name');
+        })
         .then(record => {
           service = record;
           done();
@@ -109,21 +160,20 @@ describe('User', () => {
       }));
     });
 
-    it('returns error when link service with same name', done => {
-      user.linkService('service_name', 'access_token', 'refresh_token')
-        .then(() => {
-          done.fail('user create duplicated service');
-        })
-        .catch(() => {
+    it('removes service from user object', done => {
+      newUser.getServices()
+        .then(services => {
+          expect(services.length).toEqual(0);
           done();
         });
     });
 
-    it('includes new service in user object', done => {
-      user.getServices()
-        .then(services => {
-          expect(services.length).toEqual(1);
-          expect(services[0].id).toEqual(service.id);
+    it('returns error when unlink service that is not exist', done => {
+      newUser.unlinkService('unknown_service')
+        .then(() => {
+          done.fail('user unlink unknown service');
+        })
+        .catch(() => {
           done();
         });
     });
