@@ -5,7 +5,7 @@ import { unlinkService } from '../actions';
 
 class Profile extends Component {
   linkFitbitAccount() {
-    open('/v1/fitbit/link.json', '_blank');
+    open('/v1/fitbit/link.json', '_self');
   }
 
   unlinkFitbitAccount() {
@@ -64,8 +64,6 @@ Profile.propTypes = {
 export default connect(
   state => ({ user: state.user }),
   (dispatch) => ({
-    onUnlinkService: serviceName => {
-      dispatch(unlinkService(serviceName));
-    },
+    onUnlinkService: serviceName => dispatch(unlinkService(serviceName)),
   })
   )(Profile);
