@@ -11,15 +11,18 @@ global.createUser = (email, password) =>
     password: bcrypt.hashSync(password, bcrypt.genSaltSync()),
   });
 
-global.createUserWithService = (email, password) =>
+global.createUserWithServiceName = (email, password, serviceName) =>
   global.createUser(email, password)
     .then(user =>
       Promise.all([
         Service.create({
-          name: 'service_name',
+          name: serviceName,
           accessToken: 'access_token',
           refreshToken: 'refresh_token',
           userId: user.id,
         }),
         user]))
     .then(data => Promise.resolve(data[1]));
+
+global.createUserWithService = (email, password) =>
+  global.createUserWithServiceName(email, password, 'service_name');
