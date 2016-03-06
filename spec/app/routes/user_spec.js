@@ -1,7 +1,6 @@
 'use strict';
 
 let UserRoute = require('../../../app/routes/user');
-let User = require('../../../app/models/user');
 let Fail = require('../../../app/fail');
 
 describe('User Route', () => {

@@ -1,11 +1,6 @@
 import React, { Component } from 'react';
 
 class Register extends Component {
-
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     return (<form className="register" method="post" action="/v1/users/register.json">
 
