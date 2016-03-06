@@ -42,7 +42,11 @@ class FitbitRoute {
   }
 
   unlink(request, response) {
-    response.redirect(302, '/');
+    User.findById(request.session.user.id)
+      .then(user => user.unlinkService('fitbit'))
+      .then(service => {
+        response.json({ service: service.json() });
+      });
   }
 
   callback(request, response) {
