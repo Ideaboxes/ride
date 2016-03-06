@@ -62,11 +62,13 @@ class FitbitRoute {
         authorizedToken.access_token,
         authorizedToken.refresh_token);
     })
-    .then(fitbit => {
-      response.json(fitbit.json());
+    .then(() => {
+      response.redirect(302, '/#/profile');
     })
     .catch(error => {
-      response.json(error);
+      // Need explanation for an error
+      console.error(error);
+      response.redirect(302, '/#/profile');
     });
   }
 
