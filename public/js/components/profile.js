@@ -44,7 +44,6 @@ class Profile extends Component {
 
           <ul>
             <li>{fitbitLink}</li>
-            <li>Link Strava account</li>
           </ul>
 
           <button type="submit">Update</button>
