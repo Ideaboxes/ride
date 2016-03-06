@@ -4,7 +4,6 @@ let oauth = require('oauth');
 let buffer = require('buffer');
 let qs = require('querystring');
 
-let Fail = require('../fail');
 let User = require('../models/user');
 
 let Buffer = buffer.Buffer;
@@ -27,17 +26,12 @@ class FitbitRoute {
   paths() {
     return [
       { path: '/fitbit/link', method: 'get', handler: this.link.bind(this) },
+      { path: '/fitbit/unlink', method: 'get', handler: this.unlink.bind(this) },
       { path: '/fitbit/callback', method: 'get', handler: this.callback.bind(this) },
     ];
   }
 
   link(request, response) {
-    if (!request.session.user) {
-      response.status(403);
-      response.json({ error: new Fail(Fail.ERROR_FORBIDDEN) });
-      return;
-    }
-
     let url = this.service.getAuthorizeUrl({
       response_type: 'code',
       scope: ['activity', 'heartrate', 'location', 'profile'].join(' '),
@@ -47,13 +41,11 @@ class FitbitRoute {
     response.redirect(302, url.replace('api.fitbit.com', 'www.fitbit.com'));
   }
 
-  callback(request, response) {
-    if (!request.session.user) {
-      response.status(403);
-      response.json({ error: new Fail(Fail.ERROR_FORBIDDEN) });
-      return null;
-    }
+  unlink(request, response) {
+    response.redirect(302, '/');
+  }
 
+  callback(request, response) {
     return Promise.all([
       this.getAccessToken(request.query.code),
       User.findById(request.session.user.id),

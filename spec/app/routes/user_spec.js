@@ -187,21 +187,5 @@ describe('User Route', () => {
 
       route.me(request, response);
     });
-
-    it('returns not found if user session is not exist', done => {
-      let request = { session: {} };
-      let response = {
-        status: jasmine.createSpy('status'),
-        json(data) {
-          expect(response.status).toHaveBeenCalledWith(404);
-          expect(data).toEqual({
-            error: new Fail(Fail.ERROR_NO_USER_FOUND),
-          });
-          done();
-        },
-      };
-
-      route.me(request, response);
-    });
   });
 });

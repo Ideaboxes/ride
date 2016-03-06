@@ -53,12 +53,6 @@ class UserRoute {
   }
 
   me(request, response) {
-    if (!request.session.user) {
-      response.status(404);
-      response.json({ error: new Fail(Fail.ERROR_NO_USER_FOUND) });
-      return;
-    }
-
     let user = null;
     User.findById(request.session.user.id)
       .then(record => {
