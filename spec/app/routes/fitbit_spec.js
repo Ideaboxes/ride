@@ -7,16 +7,22 @@ let qs = require('querystring');
 let Buffer = buffer.Buffer;
 
 let FitbitRoute = require('../../../app/routes/fitbit');
+let Fail = require('../../../app/fail');
 
 describe('Fitbit Route', () => {
   let route = null;
+  let user = null;
 
   beforeAll(done => {
     process.env.FITBIT_ID = 'fitbit_id';
     process.env.BASE_URL = 'http://localhost:3000';
 
     route = FitbitRoute.create();
-    global.createUser('user@email.com', 'password').then(done);
+    global.createUserWithService('user@email.com', 'password')
+      .then(record => {
+        user = record;
+        done();
+      });
   });
 
   afterAll((done) => global.cleanAllData().then(done));
@@ -56,6 +62,56 @@ describe('Fitbit Route', () => {
         redirect_uri: 'http://localhost:3000/v1/fitbit/callback.json',
         state: jasmine.any(String),
       }));
+    });
+  });
+
+  describe('#unlink', () => {
+    let result = null;
+
+    describe('with service name', () => {
+      beforeEach(done => {
+        let request = {
+          session: { user: user.json() },
+          query: { service: 'service_name' },
+        };
+        let response = {
+          json(data) {
+            result = data;
+            done();
+          },
+        };
+
+        route.unlink(request, response);
+      });
+
+      it('returns service object after unlink success', () => {
+        expect(result).toEqual({
+          service: { name: 'service_name' },
+        });
+      });
+    });
+
+    describe('without service name', () => {
+      beforeEach(done => {
+        let request = {
+          session: { user: user.json() },
+          query: {},
+        };
+        let response = {
+          json(data) {
+            result = data;
+            done();
+          },
+        };
+
+        route.unlink(request, response);
+      });
+
+      it('returns error object after unlink without service name', () => {
+        expect(result).toEqual({
+          error: new Fail(Fail.ERROR_BAD_REQUEST),
+        });
+      });
     });
   });
 
