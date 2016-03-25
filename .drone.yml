@@ -1,6 +1,6 @@
 build:
   image: llun/tester
   commands:
-    - npm install -g eslint
+    - npm install -g eslint jasmine
     - npm install
     - npm test
