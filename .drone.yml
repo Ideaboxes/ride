@@ -1,4 +1,5 @@
 build:
   image: llun/ride
   commands:
+    - npm install -g eslint
     - npm test
