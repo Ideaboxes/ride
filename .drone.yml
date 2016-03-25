@@ -1,9 +1,4 @@
-image: llun/ride:latest
-git:
-  depth: 1
-script:
-  - npm test
-notify:
-  email:
-    recipients:
-      - null@llun.me
+build:
+  image: llun/ride
+  commands:
+    - npm test
