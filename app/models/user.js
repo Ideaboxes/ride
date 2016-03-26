@@ -7,6 +7,8 @@ let crypto = require('crypto');
 
 let Fail = require('../fail');
 let Service = require('./service');
+let Activity = require('./activity');
+let Point = require('./point');
 
 let User = db.define('user', {
   email: Sequelize.STRING,
@@ -95,5 +97,7 @@ let User = db.define('user', {
 });
 
 User.hasMany(Service, { as: 'Services' });
+User.hasMany(Activity, { as: 'Activities' });
+User.hasMany(Point, { as: 'Points' });
 
 module.exports = User;

@@ -3,7 +3,6 @@
 let db = require('./db');
 let Sequelize = require('sequelize');
 
-let User = require('./user');
 let Point = require('./point');
 
 let Activity = db.define('activity', {
@@ -30,7 +29,6 @@ let Activity = db.define('activity', {
   },
 });
 
-Activity.belongsTo(User);
 Activity.hasMany(Point, { as: 'Points' });
 
 module.exports = Activity;
