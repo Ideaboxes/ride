@@ -8,12 +8,15 @@ let User = require('../app/models/user');
 let Activity = require('../app/models/activity');
 
 let listUser = () => {
+  let fitbit;
   User.findAll()
     .then(users => users[0].getServices())
     .then(services =>
       new Promise((resolve, reject) => {
         if (services.length === 0) return;
         services.forEach(service => {
+          fitbit = service;
+
           let date = new Date();
           let beforeDate = moment(date).add(1, 'd').format('YYYY-MM-DD');
 
@@ -44,6 +47,19 @@ let listUser = () => {
           startTime: activity.startTime,
         })));
     })
+    .then(activities =>
+      Promise.all(activities.map(activity =>
+        new Promise((resolve, reject) => {
+          request.get({
+            url: `https://api.fitbit.com/1/user/-/activities/${activity.logID}.tcx`,
+            headers: {
+              Authorization: `Bearer ${fitbit.accessToken}`,
+            },
+          }, (error, result, body) => {
+            if (error) return reject(error);
+            return resolve(body);
+          });
+        }))))
     .then(activities => {
       console.log(activities);
     });
