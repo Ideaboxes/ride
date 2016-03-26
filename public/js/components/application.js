@@ -7,6 +7,7 @@ function select(state) {
   return { user: state.user };
 }
 
+// eslint-disable-next-line react/prefer-stateless-function
 class Application extends Component {
   render() {
     // Injected by connect() call:
