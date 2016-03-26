@@ -7,15 +7,19 @@ let Point = require('./point');
 
 let Activity = db.define('activity', {
   logID: Sequelize.BIGINT,
-  groupID: Sequelize.BIGINT,
   loaded: Sequelize.BOOLEAN,
-  empty: Sequelize.BOOLEAN,
   distance: Sequelize.DECIMAL(20, 20), // eslint-disable-line new-cap
   duration: Sequelize.BIGINT,
   startTime: Sequelize.TIME,
   type: Sequelize.STRING,
   mapMeta: Sequelize.TEXT,
 }, {
+  indexes: [
+    {
+      unique: true,
+      fields: ['logID'],
+    },
+  ],
   instanceMethods: {
     json() {
       return {
