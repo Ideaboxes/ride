@@ -5,7 +5,7 @@ global.mockPointData = (params) => {
     time: '2016-01-25T08:52:55.000+08:00',
     latitude: '1.282346487045288',
     longitude: '103.84925305843353',
-    distance: '9033.10418104543',
+    altitude: '32.72',
   });
 
   let hash = {
