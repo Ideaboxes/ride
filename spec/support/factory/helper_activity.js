@@ -4,7 +4,7 @@ let Activity = require('../../../app/models/activity');
 
 global.createActivity = () =>
   Activity.create({
-    logId: 1,
+    logId: new Date().getTime(),
     loaded: false,
     distance: 10.23,
   });

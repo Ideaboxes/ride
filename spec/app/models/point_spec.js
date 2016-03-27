@@ -2,7 +2,7 @@
 
 let Point = require('../../../app/models/point');
 
-fdescribe('Point', () => {
+describe('Point', () => {
   afterAll((done) => global.cleanAllData().then(done));
 
   describe('#hashFromXML', () => {

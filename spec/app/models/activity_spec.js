@@ -2,27 +2,23 @@
 
 // let Activity = require('../../../app/models/activity');
 
-xdescribe('Activity', () => {
+describe('Activity', () => {
   afterAll((done) => global.cleanAllData().then(done));
 
   describe('#addPointData', () => {
     let activity;
-    let point;
     let points;
 
     beforeEach(done => {
       global.createActivity()
         .then(record => {
           activity = record;
-          return activity.addPointData(global.mockPointData({
-            altitude: '32.72',
+          return activity.addPointXML(global.mockPointData({
+            distance: '9033.10418104543',
             heartrate: '142',
           }));
         })
-        .then(record => {
-          point = record;
-          return activity.getPoints();
-        })
+        .then(() => activity.getPoints())
         .then(records => {
           points = records;
           done();
@@ -30,7 +26,7 @@ xdescribe('Activity', () => {
     });
 
     it('create new point and add to activity', () => {
-      expect(point).toEqual(jasmine.objectContaining({
+      expect(points[0].json()).toEqual(jasmine.objectContaining({
         time: 1453683175000,
         latitude: 1.282346487045288,
         longitude: 103.84925305843353,

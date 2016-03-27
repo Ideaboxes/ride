@@ -56,6 +56,12 @@ let Point = db.define('point', {
     json() {
       return {
         id: this.id,
+        latitude: this.latitude,
+        longitude: this.longitude,
+        elevation: this.elevation,
+        heartRate: this.heartRate,
+        time: this.time,
+        distance: this.distance,
       };
     },
   },
