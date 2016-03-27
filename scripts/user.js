@@ -3,6 +3,8 @@ require('dotenv').load();
 
 let moment = require('moment');
 let request = require('request');
+let parser = require('xml-parser');
+let util = require('util');
 
 let User = require('../app/models/user');
 let Activity = require('../app/models/activity');
@@ -40,7 +42,7 @@ let listUser = () => {
       console.log(pagination);
       return Promise.all(activities.map(activity =>
         Activity.create({
-          logID: activity.logId,
+          logId: activity.logId,
           loaded: false,
           distance: activity.distance,
           duration: activity.duration,
@@ -61,7 +63,9 @@ let listUser = () => {
           });
         }))))
     .then(activities => {
-      console.log(activities);
+      activities.forEach(activity => {
+        console.log(util.inspect(parser(activity), { depth: Infinity, color: true }));
+      });
     });
 };
 

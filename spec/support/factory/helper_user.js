@@ -2,8 +2,8 @@
 
 let bcrypt = require('bcrypt');
 
-let User = require('../../app/models/user');
-let Service = require('../../app/models/service');
+let User = require('../../../app/models/user');
+let Service = require('../../../app/models/service');
 
 global.createUser = (email, password) =>
   User.create({
