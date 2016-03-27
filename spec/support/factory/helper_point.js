@@ -5,11 +5,10 @@ global.mockPointData = (params) => {
     time: '2016-01-25T08:52:55.000+08:00',
     latitude: '1.282346487045288',
     longitude: '103.84925305843353',
-    altitude: '32.72',
     distance: '9033.10418104543',
-    heartrate: '142',
   });
-  return {
+
+  let hash = {
     name: 'Trackpoint',
     attributes: {},
     children: [
@@ -37,16 +36,23 @@ global.mockPointData = (params) => {
         attributes: {},
         children: [],
         content: value.altitude },
-      { name: 'DistanceMeters',
-        attributes: {},
-        children: [],
-        content: value.distance },
-      { name: 'HeartRateBpm',
-        attributes: {},
-        children: [
-          { name: 'Value', attributes: {}, children: [], content: value.heartrate },
-        ],
-        content: '' },
     ],
     content: '' };
+
+  if (value.distance) {
+    hash.children.push({ name: 'DistanceMeters',
+      attributes: {},
+      children: [],
+      content: value.distance });
+  }
+
+  if (value.heartrate) {
+    hash.children.push({ name: 'HeartRateBpm',
+      attributes: {},
+      children: [
+        { name: 'Value', attributes: {}, children: [], content: value.heartrate },
+      ],
+      content: '' });
+  }
+  return hash;
 };
