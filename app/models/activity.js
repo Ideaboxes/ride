@@ -6,22 +6,20 @@ let Sequelize = require('sequelize');
 let Point = require('./point');
 
 let Activity = db.define('activity', {
-  logId: Sequelize.BIGINT,
+  logId: Sequelize.STRING,
   loaded: Sequelize.BOOLEAN,
   distance: Sequelize.DECIMAL(20, 20), // eslint-disable-line new-cap
   duration: Sequelize.BIGINT,
   startTime: Sequelize.TIME,
   type: Sequelize.STRING,
-  mapMeta: Sequelize.TEXT,
 }, {
-  indexes: [
-    {
-      unique: true,
-      fields: ['logID'],
+  classMethods: {
+    fromXml() {
+      return Activity.create();
     },
-  ],
+  },
   instanceMethods: {
-    addPointXML(xml) {
+    addXmlPoint(xml) {
       return Point.fromXml(xml)
         .then(point => this.addPoint(point));
     },
@@ -39,5 +37,6 @@ let Activity = db.define('activity', {
 });
 
 Activity.hasMany(Point, { as: 'Points' });
+Activity.TYPE_RIDE = 'ride';
 
 module.exports = Activity;
