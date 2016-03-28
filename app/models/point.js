@@ -29,7 +29,7 @@ let Point = db.define('point', {
   distance: Sequelize.DECIMAL(20, 20), // eslint-disable-line new-cap
 }, {
   classMethods: {
-    hashFromXML(xml) {
+    fromXml(xml) {
       let hash = {};
       xml.children.forEach(child => {
         switch (child.name) {
@@ -48,7 +48,7 @@ let Point = db.define('point', {
             hash[XML_KEY[child.name]] = Number(child.content);
         }
       });
-      return hash;
+      return Point.create(hash);
     },
   },
 

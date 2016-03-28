@@ -22,8 +22,7 @@ let Activity = db.define('activity', {
   ],
   instanceMethods: {
     addPointXML(xml) {
-      let hash = Point.hashFromXML(xml);
-      return Point.create(hash)
+      return Point.fromXml(xml)
         .then(point => this.addPoint(point));
     },
 
