@@ -5,19 +5,24 @@ let Activity = require('../../../app/models/activity');
 describe('Activity', () => {
   afterAll((done) => global.cleanAllData().then(done));
 
-  fdescribe('#fromXml', () => {
+  describe('#fromXml', () => {
     let activity;
     let points;
 
     beforeEach(done => {
-      Activity.fromXml(global.mockActivityData()).then(record => {
-        activity = record;
-        return record.getPoints();
-      }).then(records => {
-        points = records;
-        done();
-      });
+      Activity.fromXml(global.mockActivityData())
+        .then(() => Activity.findAll())
+        .then(records => {
+          activity = records[0];
+          return activity.getPoints();
+        })
+        .then(records => {
+          points = records;
+          done();
+        });
     });
+
+    afterEach(done => Activity.truncate().then(done));
 
     it('creates activity with all points data', () => {
       expect(activity).toEqual(jasmine.objectContaining({

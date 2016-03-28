@@ -53,7 +53,7 @@ let listUser = () => {
       Promise.all(activities.map(activity =>
         new Promise((resolve, reject) => {
           request.get({
-            url: `https://api.fitbit.com/1/user/-/activities/${activity.logID}.tcx`,
+            url: `https://api.fitbit.com/1/user/-/activities/${activity.logId}.tcx`,
             headers: {
               Authorization: `Bearer ${fitbit.accessToken}`,
             },
@@ -63,6 +63,7 @@ let listUser = () => {
           });
         }))))
     .then(activities => {
+      console.log(activities);
       activities.forEach(activity => {
         console.log(util.inspect(parser(activity), { depth: Infinity, color: true }));
       });
