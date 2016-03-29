@@ -1,6 +1,5 @@
 'use strict';
 
-const ID_KEY = 'Id';
 const LAP_KEY = 'Lap';
 const DURATION_KEY = 'TotalTimeSeconds';
 const DISTANCE_KEY = 'DistanceMeters';
@@ -12,7 +11,7 @@ let Sequelize = require('sequelize');
 let Point = require('./point');
 
 let Activity = db.define('activity', {
-  logId: Sequelize.STRING,
+  logId: Sequelize.BIGINT,
   loaded: Sequelize.BOOLEAN,
   distance: Sequelize.DECIMAL(20, 20), // eslint-disable-line new-cap
   duration: Sequelize.BIGINT,
@@ -20,8 +19,7 @@ let Activity = db.define('activity', {
   type: Sequelize.STRING,
 }, {
   classMethods: {
-    fromXml(xml) {
-      let logId;
+    fromXml(logId, xml) {
       let lap;
       let duration;
       let distance;
@@ -31,8 +29,7 @@ let Activity = db.define('activity', {
       let activity = activities.children[0];
 
       activity.children.forEach(item => {
-        if (item.name === ID_KEY) logId = item.content;
-        else if (item.name === LAP_KEY) lap = item;
+        if (item.name === LAP_KEY) lap = item;
       });
 
       lap.children.forEach(item => {

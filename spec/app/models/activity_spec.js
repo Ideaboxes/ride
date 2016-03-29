@@ -10,7 +10,7 @@ describe('Activity', () => {
     let points;
 
     beforeEach(done => {
-      Activity.fromXml(global.mockActivityData())
+      Activity.fromXml(1, global.mockActivityData())
         .then(() => Activity.findAll())
         .then(records => {
           activity = records[0];
@@ -26,7 +26,7 @@ describe('Activity', () => {
 
     it('creates activity with all points data', () => {
       expect(activity).toEqual(jasmine.objectContaining({
-        logId: '2016-03-28T18:10:19.000+08:00',
+        logId: 1,
         loaded: true,
         distance: 10434.454680960709, // in metres
         duration: 2057, // in seconds
