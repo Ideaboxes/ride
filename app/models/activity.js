@@ -19,7 +19,7 @@ let Activity = db.define('activity', {
   type: Sequelize.STRING,
 }, {
   classMethods: {
-    fromXml(logId, xml) {
+    hashFromXml(xml) {
       let lap;
       let duration;
       let distance;
@@ -38,25 +38,31 @@ let Activity = db.define('activity', {
         if (item.name === TRACK_KEY) track = item;
       });
 
-      let hash = {
-        logId,
+      let tracks = track.children.map(point => Point.hashFromXml(point));
+
+      return {
         type: activity.attributes.Sport,
         startTime: Date.parse(lap.attributes.StartTime),
         duration,
         distance,
-        loaded: true,
+        tracks,
       };
-
-      return db.transaction(transaction =>
-        Activity.create(hash, { transaction })
-          .then(record => Promise.all(
-            track.children.map(point => record.addXmlPoint(point, { transaction })))));
     },
   },
   instanceMethods: {
-    addXmlPoint(xml, options) {
-      return Point.fromXml(xml, options)
-        .then(point => this.addPoint(point, options));
+    load(hash, options) {
+      return db.transaction(transaction =>
+        this.update(Object.assign(hash, { loaded: true }),
+          Object.assign({ transaction }, options))
+          .then(() =>
+            Promise.all(
+              hash.tracks.map(point => Point.create(
+                point, Object.assign({ transaction }, options))))
+          )
+          .then(records =>
+            Promise.all(records.map(point =>
+              this.addPoint(point, Object.assign({ transaction }, options))))
+          ));
     },
 
     json() {
