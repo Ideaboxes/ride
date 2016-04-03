@@ -7,6 +7,7 @@ let bodyParser = require('body-parser');
 let session = require('express-session');
 
 let routes = require('./app/routes');
+let log = require('./app/log');
 
 let app = express();
 app.use(session({
@@ -33,5 +34,5 @@ let server = app.listen(3000, () => {
   let host = address.address;
   let port = address.port;
 
-  console.info(`Server is started at http://${host}:${port}`);
+  log.info(`Server is started at http://${host}:${port}`);
 });

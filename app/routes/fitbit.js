@@ -5,6 +5,7 @@ let buffer = require('buffer');
 let qs = require('querystring');
 
 let User = require('../models/user');
+let Log = require('../log');
 
 let Buffer = buffer.Buffer;
 
@@ -67,7 +68,7 @@ class FitbitRoute {
     })
     .catch(error => {
       // Need explanation for an error
-      console.error(error);
+      Log.error(error);
       response.redirect(302, '/#/profile');
     });
   }

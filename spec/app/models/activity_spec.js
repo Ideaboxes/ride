@@ -1,6 +1,7 @@
 'use strict';
 
 let Activity = require('../../../app/models/activity');
+let Log = require('../../../app/log');
 
 describe('Activity', () => {
   afterAll((done) => global.cleanAllData().then(done));
@@ -43,7 +44,7 @@ describe('Activity', () => {
         done();
       })
       .catch(e => {
-        console.error(e);
+        Log.error(e);
         done();
       });
     });
