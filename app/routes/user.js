@@ -73,10 +73,7 @@ class UserRoute {
   activities(request, response) {
     User.findById(request.session.user.id)
       .then(user => user.getActivities())
-      .then(activities => {
-        log.info(activities);
-        response.json({ ok: true });
-      })
+      .then(activities => response.json({ activities: activities.map(item => item.json()) }))
       .catch(error => response.json({ error: new Fail(Fail.ERROR_DATABASE, error) }));
   }
 }
