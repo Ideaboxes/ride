@@ -3,6 +3,13 @@
 
 @include foundation-everything;
 
+$border-color: #ccc;
+$shadow-color: rgba(0, 0, 0, 0.4);
+$title-color: #4d4d4d;
+
+$shadow: 5px 5px 3px $shadow-color;
+$border: 1px solid $border-color;
+
 #application {
   height: 100vh;
   display: flex;
@@ -21,4 +28,63 @@
 .map {
   flex: 1;
   display: flex;
+  position: relative;
 }
+
+.activities {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.list-box {
+  height: 80vh;
+  padding: 0;
+
+  ul {
+    list-style: none;
+    margin-left: 0;
+    background: white;
+    border: $border;
+    overflow: auto;
+
+    max-height: 100%;
+    box-shadow: $shadow;
+  }
+
+  li {
+    margin: 4px 0;
+    border-bottom: $border;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+.activity-row {
+  padding: 0.4rem 1.2rem;
+
+  .meta span {
+    margin-right: 1rem;
+  }
+}
+
+.activity {
+  .chart { height: 200px; }
+}
+
+// @media #{$small-only} {
+//   .list-box {
+//     padding: 20px 0 0 0;
+//   }
+// }
+
+// @media #{$large-up} {
+//   .list-box {
+//     padding: 20px 0;
+//   }
+// }

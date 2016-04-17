@@ -2,6 +2,7 @@ import * as Actions from '../actions';
 
 const initialState = {
   user: null,
+  activities: [],
 };
 
 export default function Application(state = initialState, action) {

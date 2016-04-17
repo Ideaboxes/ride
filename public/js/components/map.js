@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import turf from 'turf';
 import Mapheat from 'mapheat';
 
+import Activities from './activities';
 import log from '../log';
-import { fetchUserActivities } from '../actions';
 
 class Map extends Component {
 
@@ -12,12 +12,6 @@ class Map extends Component {
     super(props);
 
     this.state = { size: 3000 };
-  }
-
-  componentWillMount() {
-    if (this.props.user) {
-      this.props.onFetchUserActivities();
-    }
   }
 
   componentDidMount() {
@@ -101,6 +95,13 @@ class Map extends Component {
           height={cropCanvasSize}
           style={canvasStyle}
         ></canvas>
+
+        {(() => {
+          if (this.props.user) {
+            return <Activities />;
+          }
+          return null;
+        })()}
       </div>
     );
   }
@@ -109,12 +110,6 @@ class Map extends Component {
 
 Map.propTypes = {
   user: React.PropTypes.object,
-  onFetchUserActivities: React.PropTypes.func,
 };
 
-export default connect(
-  state => ({ user: state.user, activities: state.activities }),
-  (dispatch) => ({
-    onFetchUserActivities: user => dispatch(fetchUserActivities(user)),
-  })
-  )(Map);
+export default connect(state => ({ user: state.user }))(Map);

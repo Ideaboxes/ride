@@ -34,7 +34,7 @@ export function fetchUserActivities() {
     fetch('/v1/users/activities.json', { credentials: 'include' })
       .then(data => data.json())
       .then(json => {
-        dispatch(setUserActivities(json));
+        dispatch(setUserActivities(json.activities));
       });
   };
 }
