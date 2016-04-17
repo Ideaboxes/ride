@@ -24,7 +24,7 @@ class Log {
 }
 
 ['log', 'info', 'error'].forEach(method => {
-  Log[method] = function() {
+  Log[method] = function () {
     let instance = Log.instance();
     instance[method].apply(null, arguments);
   };

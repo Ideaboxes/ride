@@ -178,21 +178,4 @@ describe('User', () => {
         });
     });
   });
-
-  describe('#addTcxActivity', () => {
-    let activities;
-
-    beforeEach(done => {
-      user.addTcxActivity(global.mockActivityData())
-        .then(() => user.getActivities())
-        .then(records => {
-          activities = records;
-        })
-        .then(done);
-    });
-
-    it('adds activity to user', () => {
-      expect(activities.length).toEqual(1);
-    });
-  });
 });

@@ -3,8 +3,7 @@ require('dotenv').load();
 
 let moment = require('moment');
 let request = require('request');
-let parser = require('xml-parser');
-let util = require('util');
+let log = require('../app/log');
 
 let User = require('../app/models/user');
 let Activity = require('../app/models/activity');
@@ -39,7 +38,7 @@ let listUser = () => {
       let activities = body.activities;
       let pagination = body.pagination;
 
-      console.log(pagination);
+      log.log('pagination data', pagination);
       return Promise.all(activities.map(activity =>
         Activity.create({
           logId: activity.logId,
@@ -52,21 +51,30 @@ let listUser = () => {
     .then(activities =>
       Promise.all(activities.map(activity =>
         new Promise((resolve, reject) => {
+          log.info('requesting', activity.logId);
           request.get({
             url: `https://api.fitbit.com/1/user/-/activities/${activity.logId}.tcx`,
             headers: {
               Authorization: `Bearer ${fitbit.accessToken}`,
             },
           }, (error, result, body) => {
+            log.info('got data', body);
             if (error) return reject(error);
             return resolve(body);
           });
-        }))))
-    .then(activities => {
-      console.log(activities);
-      activities.forEach(activity => {
-        console.log(util.inspect(parser(activity), { depth: Infinity, color: true }));
-      });
+        })))
+      .then(tcxs => {
+        log.info('loading tcxs');
+        log.info(tcxs);
+        return Promise.all(activities.map((activity, index) =>
+          activity.load(Activity.hashFromXml(tcxs[index]))
+        ));
+      }))
+    .then(records => {
+      log.log(records);
+    })
+    .catch(error => {
+      log.error(error);
     });
 };
 
