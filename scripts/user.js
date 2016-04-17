@@ -69,16 +69,31 @@ let listUser = () => {
         })))
       .then(tcxs => {
         log.info('loading tcxs');
+        return new Promise(resolve => {
+          let loadActivity = index => {
+            log.info(`Load ${index}`);
+            if (index < tcxs.length) {
+              activities[index].load(Activity.hashFromXml(parse(tcxs[index])))
+                .then(() => {
+                  log.info(`Add activity ${index}`);
+                  return user.addActivity(activities[index]);
+                })
+                .then(() => {
+                  log.info(`Next activity ${index + 1}`);
+                  loadActivity(index + 1);
+                })
+                .catch(error => {
+                  log.info(`Error, Next activity ${index + 1}`, error);
+                  loadActivity(index + 1);
+                });
+              return;
+            }
+            resolve();
+            return;
+          };
 
-        let loadActivity = index => {
-          if (index < tcxs.length) {
-            return activities[index].load(Activity.hashFromXml(parse(tcxs[index])))
-              .then(user.addActivity(activities[0]))
-              .then(loadActivity(index++));
-          }
-          return Promise.resolve();
-        };
-        return loadActivity(0);
+          loadActivity(0);
+        });
       }))
     .then(() => user.getActivities())
     .then(activities => {
