@@ -3,6 +3,7 @@ require('dotenv').load();
 
 let moment = require('moment');
 let request = require('request');
+let parse = require('xml-parser');
 let log = require('../app/log');
 
 let User = require('../app/models/user');
@@ -13,8 +14,8 @@ let listUser = () => {
   let user;
   User.findAll()
     .then(users => {
-      let user = users[0];
-      return user.getServices()
+      user = users[0];
+      return user.getServices();
     })
     .then(services =>
       new Promise((resolve, reject) => {
@@ -69,7 +70,7 @@ let listUser = () => {
       .then(tcxs => {
         log.info('loading tcxs');
         return Promise.all(activities.map((activity, index) =>
-          activity.load(Activity.hashFromXml(tcxs[index]))
+          activity.load(Activity.hashFromXml(parse(tcxs[index])))
         ));
       }))
     .then(records => Promise.all(records.map(record => user.addActivity(record))))

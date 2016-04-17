@@ -2,6 +2,7 @@
 
 let Activity = require('../../../app/models/activity');
 let Log = require('../../../app/log');
+var parse = require('xml-parser');
 
 describe('Activity', () => {
   afterAll((done) => global.cleanAllData().then(done));
