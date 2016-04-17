@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import turf from 'turf';
 import Mapheat from 'mapheat';
+
+import log from '../log';
+import { fetchUserActivities } from '../actions';
 
 class Map extends Component {
 
@@ -8,6 +12,12 @@ class Map extends Component {
     super(props);
 
     this.state = { size: 3000 };
+  }
+
+  componentWillMount() {
+    if (this.props.user) {
+      this.props.onFetchUserActivities();
+    }
   }
 
   componentDidMount() {
@@ -24,8 +34,8 @@ class Map extends Component {
     let features = squareGrid.features;
 
     map.on('zoomend', () => {
-      console.log(map.getZoom());
-      console.log(map.getBounds());
+      log.log(map.getZoom());
+      log.log(map.getBounds());
     });
 
     // let polygon = features.map(...)
@@ -70,7 +80,7 @@ class Map extends Component {
 
         // End renders all blocks
         let end = +new Date();
-        console.log(end - begin);
+        log.log(end - begin);
       });
   }
 
@@ -96,4 +106,15 @@ class Map extends Component {
   }
 
 }
-export default Map;
+
+Map.propTypes = {
+  user: React.PropTypes.object,
+  onFetchUserActivities: React.PropTypes.func,
+};
+
+export default connect(
+  state => ({ user: state.user, activities: state.activities }),
+  (dispatch) => ({
+    onFetchUserActivities: user => dispatch(fetchUserActivities(user)),
+  })
+  )(Map);
