@@ -62,7 +62,6 @@ let listUser = () => {
               Authorization: `Bearer ${fitbit.accessToken}`,
             },
           }, (error, result, body) => {
-            log.info('got data', body);
             if (error) return reject(error);
             return resolve(body);
           });
