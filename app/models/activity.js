@@ -72,6 +72,7 @@ let Activity = db.define('activity', {
         groupID: this.groupID,
         distance: this.distance,
         duration: this.duration,
+        type: this.type,
       };
     },
   },
