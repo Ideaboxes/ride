@@ -2,17 +2,9 @@
 'use strict';
 
 class Log {
-
   static instance() {
     if (!Log._instance) {
       Log._instance = new Log;
-
-      ['log', 'info', 'error'].forEach(method => {
-        Log[method] = () => {
-          let instance = Log._instance;
-          instance[method].apply(null, arguments);
-        };
-      });
     }
 
     return Log._instance;
@@ -30,5 +22,12 @@ class Log {
     console.error.apply(null, arguments);
   }
 }
+
+['log', 'info', 'error'].forEach(method => {
+  Log[method] = function() {
+    let instance = Log.instance();
+    instance[method].apply(null, arguments);
+  };
+});
 
 module.exports = Log;
