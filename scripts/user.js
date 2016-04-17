@@ -69,7 +69,6 @@ let listUser = () => {
         })))
       .then(tcxs => {
         log.info('loading tcxs');
-        log.info(tcxs);
         return Promise.all(activities.map((activity, index) =>
           activity.load(Activity.hashFromXml(tcxs[index]))
         ));
