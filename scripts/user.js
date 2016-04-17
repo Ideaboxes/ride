@@ -10,8 +10,12 @@ let Activity = require('../app/models/activity');
 
 let listUser = () => {
   let fitbit;
+  let user;
   User.findAll()
-    .then(users => users[0].getServices())
+    .then(users => {
+      let user = users[0];
+      return user.getServices()
+    })
     .then(services =>
       new Promise((resolve, reject) => {
         if (services.length === 0) return;
@@ -70,8 +74,10 @@ let listUser = () => {
           activity.load(Activity.hashFromXml(tcxs[index]))
         ));
       }))
-    .then(records => {
-      log.log(records);
+    .then(records => Promise.all(records.map(record => user.addActivity(record))))
+    .then(() => user.getActivities())
+    .then(activities => {
+      log.log('User activities length', activities.length);
     })
     .catch(error => {
       log.error(error);
