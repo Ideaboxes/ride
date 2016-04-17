@@ -73,13 +73,13 @@ let listUser = () => {
         let loadActivity = index => {
           if (index < tcxs.length) {
             return activities[index].load(Activity.hashFromXml(parse(tcxs[index])))
+              .then(user.addActivity(activities[0]))
               .then(loadActivity(index++));
           }
           return Promise.resolve();
         };
         return loadActivity(0);
       }))
-    .then(records => Promise.all(records.map(record => user.addActivity(record))))
     .then(() => user.getActivities())
     .then(activities => {
       log.log('User activities length', activities.length);
