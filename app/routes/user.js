@@ -1,6 +1,5 @@
 'use strict';
 
-let log = require('../log');
 let User = require('../models/user');
 let Fail = require('../fail');
 
