@@ -69,9 +69,15 @@ let listUser = () => {
         })))
       .then(tcxs => {
         log.info('loading tcxs');
-        return Promise.all(activities.map((activity, index) =>
-          activity.load(Activity.hashFromXml(parse(tcxs[index])))
-        ));
+
+        let loadActivity = index => {
+          if (index < tcxs.length) {
+            return activities[index].load(Activity.hashFromXml(parse(tcxs[index])))
+              .then(loadActivity(index++));
+          }
+          return Promise.resolve();
+        };
+        return loadActivity(0);
       }))
     .then(records => Promise.all(records.map(record => user.addActivity(record))))
     .then(() => user.getActivities())
