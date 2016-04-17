@@ -11,6 +11,7 @@ class SecureRoute {
     return [
       '/users/logout',
       '/users/me',
+      '/users/activities',
       '/fitbit/*',
     ].map(path => ({ path, method: 'all', handler: this.requiredUser.bind(this) }));
   }

@@ -1,5 +1,6 @@
 'use strict';
 
+let log = require('../log');
 let User = require('../models/user');
 let Fail = require('../fail');
 
@@ -15,6 +16,7 @@ class UserRoute {
       { path: '/users/logout', method: 'get', handler: this.logout },
       { path: '/users/register', method: 'post', handler: this.register },
       { path: '/users/me', method: 'get', handler: this.me },
+      { path: '/users/activities', method: 'get', handler: this.activities },
     ];
   }
 
@@ -68,6 +70,15 @@ class UserRoute {
         response.json({ error: new Fail(Fail.ERROR_DATABASE, error) }));
   }
 
+  activities(request, response) {
+    User.findById(request.session.user.id)
+      .then(user => user.getActivities())
+      .then(activities => {
+        log.info(activities);
+        response.json({ ok: true });
+      })
+      .catch(error => response.json({ error: new Fail(Fail.ERROR_DATABASE, error) }));
+  }
 }
 
 module.exports = UserRoute;
