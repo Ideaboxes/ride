@@ -22,7 +22,7 @@ class Activities extends Component {
     return (
       <div className="activities">
         <div className="row">
-          <div className="medium-offset-8 medium-4 columns list-box">
+          <div className="medium-offset-7 medium-4 columns list-box">
             <ul>{this.getActivities()}</ul>
           </div>
         </div>
