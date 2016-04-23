@@ -5,6 +5,7 @@ import Mapheat from 'mapheat';
 
 import Activities from './activities';
 import log from '../log';
+import { MAPBOX_ACCESS_TOKEN, MAP_ID } from '../config';
 
 class Map extends Component {
 
@@ -15,9 +16,8 @@ class Map extends Component {
   }
 
   componentDidMount() {
-    L.mapbox.accessToken = 'pk.eyJ1IjoibGx1biIsImEiOiI0NzZjNDE' +
-      '3N2I1YWEwNWVjOGZjZDUzY2IxZmY3Y2MzOCJ9.Sj_jgKyAatQFDirVDM8jZw';
-    let map = L.mapbox.map(this.refs.map, 'llun.nhpgpcn0');
+    L.mapbox.accessToken = MAPBOX_ACCESS_TOKEN;
+    let map = L.mapbox.map(this.refs.map, MAP_ID);
     let extent = [103.6, 1.2, 104.2, 1.6];
     let cellWidth = 0.1;
     let units = 'degrees';
