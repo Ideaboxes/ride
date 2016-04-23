@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
-import Chart from 'chart.js';
+// import Chart from 'chart.js';
 
 import { Link } from 'react-router';
 
